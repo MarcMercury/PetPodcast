@@ -1,9 +1,17 @@
 'use client';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { createSupabaseBrowser } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const supabase = createSupabaseBrowser();
   const router = useRouter();
   const params = useSearchParams();

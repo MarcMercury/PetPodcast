@@ -104,7 +104,7 @@ export default async function HomePage({
       {/* Hero */}
       <section className="relative overflow-hidden border-b border-bone">
         <div className="mx-auto max-w-6xl px-6 pt-20 pb-20">
-          <p className="eyebrow">A Green Dog Production · Issue 01</p>
+          <p className="eyebrow">Issue 01</p>
           <h1 className="mt-4 text-5xl sm:text-7xl font-extrabold leading-[0.95] tracking-tight">
             See Your Pet
             <br />

@@ -56,7 +56,6 @@ function SiteHeader() {
       <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
         <a href="/" className="flex items-center gap-3">
           <Wordmark />
-          <span className="hidden sm:inline-block chip">A Green Dog Production</span>
         </a>
         <nav className="flex items-center gap-6 text-sm">
           <a href="/#episodes" className="hover:text-sage-700">Episodes</a>
@@ -85,7 +84,7 @@ function SiteFooter() {
             petpodcast.pet@gmail.com
           </a>
           <p className="text-sage-500 tracking-wide">
-            See Your Pet Through a Vet’s Eyes · A Green Dog Production
+            See Your Pet Through a Vet’s Eyes
           </p>
         </div>
       </div>

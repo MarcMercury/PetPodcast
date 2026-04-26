@@ -236,14 +236,14 @@ export default function NewEpisodePage() {
                 placeholder="Episode #"
                 type="number"
                 className="rounded-xl border border-sage-200 px-4 py-3"
-             input
+              />
+            </div>
+            <input
               value={spotifyUrl}
               onChange={(e) => setSpotifyUrl(e.target.value)}
               placeholder="Spotify episode URL (optional) — https://open.spotify.com/episode/..."
               className="rounded-xl border border-sage-200 px-4 py-3"
             />
-            < />
-            </div>
             <button onClick={createDraft} disabled={!title || !!busy} className="btn-primary">
               Continue →
             </button>

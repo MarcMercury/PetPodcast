@@ -1,4 +1,9 @@
-// Gemini 1.5 Pro — show-notes generation + image-prompt suggestions.
+// Gemini 1.5 Pro — show-notes generation + entity link extraction.
+// Prompts follow the Opus 4.7-style XML scaffolding documented in AGENTS.md §5
+// and inject the progressive-learning store from src/lib/ai/learnings.json on
+// every call (see AGENTS.md §6).
+
+import { learnedPreferencesBlock, isApprovedDomain } from './learnings';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
 const MODEL = 'gemini-1.5-pro-latest';
@@ -12,15 +17,38 @@ export interface ShowNotesPayload {
   suggested_image_prompt: string;
 }
 
-const SYSTEM = `You are a veterinary content editor for "Pet Podcast" — clinical-yet-warm tone (Green Dog clinic aesthetic).
-Given a podcast transcript, output STRICT JSON matching this TypeScript type:
-{
-  "summary": string,                              // 2-3 paragraph "Doctor's Note" style
-  "key_takeaways": string[],                      // exactly 5 bullets, plain text
-  "chapters": { "start": number, "title": string }[], // start in seconds
-  "seo_description": string,                      // <=155 chars
-  "suggested_image_prompt": string                // visual prompt for episode art
-}`;
+function showNotesSystem(): string {
+  return `<role>
+  You are the veterinary content editor for "Petspective". Your house style is
+  "Doctor's Note": clinical-yet-warm,
+  calm, precise, never marketing-y.
+</role>
+
+<task>
+  Convert the supplied podcast transcript into structured show notes.
+</task>
+
+<constraints>
+  - Ground every claim in the transcript. Do not invent facts.
+  - Match output length to transcript length: ~10 min episode → tight summary;
+    ~60 min episode → fuller summary. Do not pad.
+  - Honor every rule in <learned_preferences>. They override generic editorial taste.
+  - If the transcript names a vet, use "Dr. <Last>" on first reference.
+</constraints>
+
+<format>
+  Output STRICT JSON matching this TypeScript type — no preface, no trailing text:
+  {
+    "summary": string,                                   // 2-3 paragraphs, "Doctor's Note" style
+    "key_takeaways": string[],                           // exactly 5, imperative or declarative
+    "chapters": { "start": number, "title": string }[],  // start in seconds, ascending
+    "seo_description": string,                           // ≤155 chars, includes primary topic
+    "suggested_image_prompt": string                     // honors <image_prompt_rules>
+  }
+</format>
+
+${learnedPreferencesBlock(['voice', 'banned_phrases', 'show_notes_rules', 'image_prompt_rules'])}`;
+}
 
 export async function generateShowNotes(transcript: string, segmentsHint = ''): Promise<ShowNotesPayload> {
   if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not set');
@@ -31,12 +59,16 @@ export async function generateShowNotes(transcript: string, segmentsHint = ''): 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SYSTEM }] },
+        systemInstruction: { parts: [{ text: showNotesSystem() }] },
         generationConfig: { responseMimeType: 'application/json', temperature: 0.4 },
         contents: [
           {
             role: 'user',
-            parts: [{ text: `Transcript:\n${transcript}\n\nSegments hint:\n${segmentsHint}` }]
+            parts: [
+              {
+                text: `<input>\n  <transcript>\n${transcript}\n  </transcript>\n  <segments_hint>\n${segmentsHint}\n  </segments_hint>\n</input>`
+              }
+            ]
           }
         ]
       })
@@ -71,23 +103,35 @@ export interface EntityLink {
   description?: string;
 }
 
-const ENTITY_SYSTEM = `You are a veterinary research librarian for "Pet Podcast".
-Given a podcast transcript, identify the most important named subjects and items
-a curious pet owner might want to look up — diseases, medications, procedures,
-breeds, nutrients, organizations (e.g. AVMA, AAHA, FDA-CVM), and notable products.
+function entitySystem(): string {
+  return `<role>
+  You are a veterinary research librarian for "Petspective". You identify the
+  most educationally valuable named subjects in a transcript and link each to
+  an authoritative public reference.
+</role>
 
-Rules:
-- Return AT MOST 20 entries, ranked by educational value.
-- "term" must appear verbatim (or near-verbatim) in the transcript.
-- Skip generic words ("dog", "vet", "owner") and brand-less commodities.
-- "url" MUST be an authoritative public reference. Prefer in this order:
-    1. Wikipedia (https://en.wikipedia.org/wiki/<Title>)
-    2. Merck Veterinary Manual (https://www.merckvetmanual.com/...)
-    3. AVMA / AAHA / FDA / NIH / Cornell / VCA Hospitals official pages
-    4. Official manufacturer site for products
-- Never invent a URL you are not confident exists. If unsure, omit the entry.
-- "description" is optional, <= 140 chars, plain text.
-- Output STRICT JSON: { "entities": EntityLink[] }`;
+<task>
+  Extract up to 20 entities from the transcript, ranked by educational value,
+  and pair each with one trustworthy URL.
+</task>
+
+<constraints>
+  - "term" must appear verbatim (or near-verbatim) in the transcript.
+  - Skip generic words ("dog", "vet", "owner") and brand-less commodities.
+  - URL MUST be on an approved domain — see <approved_entity_domains>. Prefer in
+    this order: Wikipedia → Merck Vet Manual → AVMA / AAHA / FDA / NIH / Cornell
+    / VCA Hospitals → official manufacturer site (only if added to the allowlist).
+  - Never invent a URL. If not confident the page exists, omit the entry.
+  - "description" is optional, ≤140 chars, plain text, grounded in the transcript.
+</constraints>
+
+<format>
+  Output STRICT JSON: { "entities": EntityLink[] } where
+  EntityLink = { term: string; type: EntityLinkType; url: string; description?: string }
+</format>
+
+${learnedPreferencesBlock(['approved_entity_domains', 'voice'])}`;
+}
 
 export async function extractEntityLinks(transcript: string): Promise<EntityLink[]> {
   if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not set');
@@ -98,10 +142,13 @@ export async function extractEntityLinks(transcript: string): Promise<EntityLink
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: ENTITY_SYSTEM }] },
+        systemInstruction: { parts: [{ text: entitySystem() }] },
         generationConfig: { responseMimeType: 'application/json', temperature: 0.2 },
         contents: [
-          { role: 'user', parts: [{ text: `Transcript:\n${transcript}` }] }
+          {
+            role: 'user',
+            parts: [{ text: `<input>\n  <transcript>\n${transcript}\n  </transcript>\n</input>` }]
+          }
         ]
       })
     }
@@ -113,7 +160,8 @@ export async function extractEntityLinks(transcript: string): Promise<EntityLink
   const parsed = JSON.parse(text) as { entities?: EntityLink[] };
   const raw = Array.isArray(parsed.entities) ? parsed.entities : [];
 
-  // Defensive: enforce shape, dedupe by lowercased term, keep https-only URLs.
+  // Defensive post-processing: enforce shape, dedupe, https-only, allowlist.
+  // The allowlist is the runtime enforcement of learnings.approved_entity_domains.
   const seen = new Set<string>();
   const out: EntityLink[] = [];
   for (const e of raw) {
@@ -125,6 +173,7 @@ export async function extractEntityLinks(transcript: string): Promise<EntityLink
     let url: URL;
     try { url = new URL(e.url); } catch { continue; }
     if (url.protocol !== 'https:') continue;
+    if (!isApprovedDomain(url.toString())) continue;
     seen.add(key);
     out.push({
       term,

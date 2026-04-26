@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "voice": [
+    "Write in a 'Doctor's Note' tone: clinical-yet-warm, calm, precise.",
+    "Short sentences. Plain language. Earn jargon by defining it.",
+    "Never speculate. If a fact is not in the transcript, do not invent it."
+  ],
+  "banned_phrases": [
+    "game-changer",
+    "cutting-edge",
+    "revolutionary",
+    "in today's fast-paced world",
+    "dive deep",
+    "in this episode, we'll explore"
+  ],
+  "approved_entity_domains": [
+    "en.wikipedia.org",
+    "merckvetmanual.com",
+    "avma.org",
+    "aaha.org",
+    "fda.gov",
+    "nih.gov",
+    "cornell.edu",
+    "vcahospitals.com"
+  ],
+  "show_notes_rules": [
+    "Refer to vets as 'Dr. <Last>' on first reference, '<Last>' afterwards.",
+    "Never include a specific medication dose. Always defer to 'ask your veterinarian'.",
+    "Key takeaways are imperative or declarative, not questions.",
+    "SEO description must be ≤155 characters and contain the primary animal/topic."
+  ],
+  "image_prompt_rules": [
+    "No human faces. Pets, environments, objects only.",
+    "No text, captions, watermarks, or logos rendered in the image.",
+    "Palette: sage green, warm cream/gallery, off-black ink. Editorial, not cartoonish.",
+    "Composition leaves a calm negative-space area top-left for title overlay."
+  ]
+}

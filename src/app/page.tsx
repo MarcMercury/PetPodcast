@@ -111,9 +111,9 @@ export default async function HomePage({
             Through a <span className="text-sage-700">Vet&rsquo;s</span> Eyes.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-sage-800 leading-relaxed">
-            Petspective is a clinical-grade audio brief from Green Dog &mdash;
-            real veterinarians on nutrition, surgery, behavior, and the
-            questions every pet owner Googles at 2am.
+            Petspective is a clinical-grade audio brief &mdash; real
+            veterinarians on nutrition, surgery, behavior, and the questions
+            every pet owner Googles at 2am.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#episodes" className="btn-dark">▶ Listen Now</a>
@@ -291,8 +291,8 @@ export default async function HomePage({
         <p className="eyebrow">The Pack</p>
         <h2 className="mt-2 text-3xl font-extrabold tracking-tight">Meet the Vets</h2>
         <p className="mt-2 text-sage-700 max-w-2xl">
-          Practicing veterinarians from the Green Dog network &mdash; the voices behind every
-          Petspective episode.
+          Practicing veterinarians &mdash; the voices behind every Petspective
+          episode.
         </p>
         <div className="mt-8 grid sm:grid-cols-2 md:grid-cols-4 gap-6">
           {(vets ?? []).map((v: Vet) => (

@@ -4,6 +4,8 @@ import type { Episode, ShowNotes, Transcript, Vet } from '@/lib/types';
 import type { Metadata } from 'next';
 import TranscriptPlayer from './transcript-player';
 import { spotifyEmbedUrl } from '@/lib/spotify';
+import { getFeedById } from '@/lib/podcastindex';
+import { buildListenLinks } from '@/lib/listen-links';
 
 export const revalidate = 60;
 
@@ -19,7 +21,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const ep = data as Pick<Episode, 'title' | 'description' | 'image_url'>;
   return {
     title: `${ep.title} — Petspective`,
-    description: ep.description ?? 'See Your Pet Through a Vet’s Eyes — a Green Dog production.',
+    description: ep.description ?? 'See Your Pet Through a Vet’s Eyes.',
     openGraph: {
       title: `${ep.title} — Petspective`,
       description: ep.description ?? '',
@@ -50,6 +52,10 @@ export default async function EpisodePage({ params }: { params: { slug: string }
       ? supabase.from('vets').select('*').eq('id', ep.guest_vet_id).maybeSingle()
       : Promise.resolve({ data: null })
   ]);
+
+  const piFeedId = process.env.PODCAST_INDEX_FEED_ID;
+  const piFeed = piFeedId ? await getFeedById(piFeedId) : null;
+  const listenLinks = piFeed ? buildListenLinks(piFeed) : [];
 
   return (
     <article className="mx-auto max-w-4xl px-6 py-12">
@@ -108,6 +114,26 @@ export default async function EpisodePage({ params }: { params: { slug: string }
           </section>
         );
       })()}
+
+      {/* Listen everywhere (Podcast Index) */}
+      {listenLinks.length > 0 && (
+        <section className="mt-8">
+          <p className="eyebrow">Also available on</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {listenLinks.map((l) => (
+              <a
+                key={l.platform}
+                href={l.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="chip hover:bg-sage-50"
+              >
+                {l.label}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Show Notes */}
       {notes && (

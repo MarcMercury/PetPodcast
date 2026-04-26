@@ -1,8 +1,25 @@
-# Contributing — Pet Podcast
+# Contributing — Petspective (codename: Pet Podcast)
 
-> **🚨 Read this first.** Pet Podcast shares the Supabase project `cuxuqsnbxwuhdeajrjcz`
+> **🚨 Read this first.** Petspective shares the Supabase project `cuxuqsnbxwuhdeajrjcz`
 > with **Stoop Politics**. The two apps must remain fully isolated. Breaking these rules
 > can corrupt or expose Stoop Politics data.
+>
+> AI coding agents: also read [AGENTS.md](AGENTS.md) before making changes — it covers the
+> Opus 4.7 prompting contract and the progressive-learning loop.
+
+---
+
+## Brand vs. namespace
+
+| | Use this |
+|---|---|
+| Listener-facing copy, metadata, OG tags, marketing | **Petspective** — "The Vet's Eye View" |
+| Repo / package name | `pet-podcast-web` (do not rename) |
+| Database schema | `pet_podcast` (do not rename — this is the isolation key) |
+| Storage buckets | `pet-podcast-audio`, `pet-podcast-images` |
+| Internal docs / CONTRIBUTING / migration filenames | "Pet Podcast" is fine |
+
+The brand split is intentional: the customer-visible name (Petspective) can evolve, but the schema/bucket prefix `pet_podcast` is the wall between us and Stoop Politics. Never rename it.
 
 ---
 
@@ -66,7 +83,11 @@ The `assertPetBucket()` helper throws if a forbidden bucket name is ever used.
 ### 5. Migrations
 
 - Add new SQL files to `supabase/migrations/NNNN_<description>.sql`, sequentially numbered.
-- Apply via the Supabase SQL Editor or the management API (see existing migration for the pattern).
+- Current migrations:
+  - `0001_pet_podcast_init.sql` — schema, 10 tables, RLS, helpers.
+  - `0002_transcript_entity_links.sql` — `transcripts.entity_links jsonb`.
+  - `0003_episode_spotify_url.sql` — `episodes.spotify_url text`.
+- Apply via `psql "$SUPABASE_DB_URL" -f <file>` (preferred) or the Supabase SQL Editor.
 - **Never** run migrations that touch the `public` schema.
 
 ---
@@ -97,6 +118,9 @@ Set these in `.env.local` and Vercel. **Never commit `.env.local`.**
 | `OPENAI_API_KEY` | yes | Whisper / GPT / DALL·E |
 | `GEMINI_API_KEY` | yes | Show notes generation |
 | `NEXT_PUBLIC_SITE_URL` | yes | `https://www.podcast.pet` |
+| `PODCAST_INDEX_KEY` / `PODCAST_INDEX_SECRET` | optional | Cross-platform listen links |
+| `PODCAST_INDEX_FEED_ID` | optional | Petspective's feed id (numeric) |
+| `SUPABASE_DB_URL` | optional (dev only) | Direct Postgres URL for `psql` migrations |
 
 ---
 

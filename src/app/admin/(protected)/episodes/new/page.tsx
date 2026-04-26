@@ -18,7 +18,6 @@ export default function NewEpisodePage() {
   const [description, setDescription] = useState('');
   const [season, setSeason] = useState('');
   const [episodeNumber, setEpisodeNumber] = useState('');
-  const [spotifyUrl, setSpotifyUrl] = useState('');
   const [episodeId, setEpisodeId] = useState<string | null>(null);
 
   // Step 2
@@ -51,8 +50,7 @@ export default function NewEpisodePage() {
           slug,
           description,
           season: season ? parseInt(season) : null,
-          episode_number: episodeNumber ? parseInt(episodeNumber) : null,
-          spotify_url: spotifyUrl.trim() || null
+          episode_number: episodeNumber ? parseInt(episodeNumber) : null
         })
       });
       const j = await res.json();
@@ -238,12 +236,6 @@ export default function NewEpisodePage() {
                 className="rounded-xl border border-sage-200 px-4 py-3"
               />
             </div>
-            <input
-              value={spotifyUrl}
-              onChange={(e) => setSpotifyUrl(e.target.value)}
-              placeholder="Spotify episode URL (optional) — https://open.spotify.com/episode/..."
-              className="rounded-xl border border-sage-200 px-4 py-3"
-            />
             <button onClick={createDraft} disabled={!title || !!busy} className="btn-primary">
               Continue →
             </button>

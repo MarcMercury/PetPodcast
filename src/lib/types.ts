@@ -25,6 +25,7 @@ export interface Episode {
   guest_vet_id: string | null;
   audio_url: string | null;
   image_url: string | null;
+  spotify_url: string | null;
   duration_seconds: number | null;
   animal_types: AnimalType[];
   status: EpisodeStatus;

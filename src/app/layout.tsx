@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Petspective — The Vet’s Eye View',
+  title: 'Petspective — See Your Pet Through a Vet’s Eyes',
   description:
     'Petspective is a Green Dog production: clinical-grade conversations with practicing vets on nutrition, surgery, behavior, and the questions every pet owner Googles at 2am.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.podcast.pet'),
   openGraph: {
     title: 'Petspective',
-    description: 'The Vet’s Eye View — a Green Dog production.',
+    description: 'See Your Pet Through a Vet’s Eyes — a Green Dog production.',
     url: 'https://www.podcast.pet',
     siteName: 'Petspective',
     type: 'website'
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Petspective',
-    description: 'The Vet’s Eye View — a Green Dog production.'
+    description: 'See Your Pet Through a Vet’s Eyes — a Green Dog production.'
   }
 };
 
@@ -85,7 +85,7 @@ function SiteFooter() {
             petpodcast.pet@gmail.com
           </a>
           <p className="text-sage-500 tracking-wide">
-            The Vet’s Eye View · A Green Dog Production
+            See Your Pet Through a Vet’s Eyes · A Green Dog Production
           </p>
         </div>
       </div>

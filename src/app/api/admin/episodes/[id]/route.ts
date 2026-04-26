@@ -26,6 +26,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
   if (body.title) updates.title = body.title;
   if (body.description) updates.description = body.description;
+  if (body.spotify_url !== undefined) updates.spotify_url = body.spotify_url || null;
 
   const { error } = await supabaseAdmin
     .from('episodes').update(updates).eq('id', params.id);

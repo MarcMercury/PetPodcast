@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { Episode, ShowNotes, Transcript, Vet } from '@/lib/types';
 import type { Metadata } from 'next';
 import TranscriptPlayer from './transcript-player';
+import { spotifyEmbedUrl } from '@/lib/spotify';
 
 export const revalidate = 60;
 
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const ep = data as Pick<Episode, 'title' | 'description' | 'image_url'>;
   return {
     title: `${ep.title} — Petspective`,
-    description: ep.description ?? 'The Vet’s Eye View — a Green Dog production.',
+    description: ep.description ?? 'See Your Pet Through a Vet’s Eyes — a Green Dog production.',
     openGraph: {
       title: `${ep.title} — Petspective`,
       description: ep.description ?? '',
@@ -85,6 +86,28 @@ export default async function EpisodePage({ params }: { params: { slug: string }
         chapters={(notes as ShowNotes | null)?.chapters ?? []}
         entityLinks={(transcript as Transcript | null)?.entity_links ?? []}
       />
+
+      {/* Spotify embed */}
+      {(() => {
+        const embed = spotifyEmbedUrl(ep.spotify_url);
+        if (!embed) return null;
+        return (
+          <section className="mt-10">
+            <p className="eyebrow">Listen on Spotify</p>
+            <div className="mt-3 rounded-2xl overflow-hidden ring-1 ring-bone">
+              <iframe
+                src={embed}
+                title={`${ep.title} on Spotify`}
+                width="100%"
+                height="232"
+                frameBorder={0}
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+              />
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Show Notes */}
       {notes && (

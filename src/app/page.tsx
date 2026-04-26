@@ -106,9 +106,9 @@ export default async function HomePage({
         <div className="mx-auto max-w-6xl px-6 pt-20 pb-20">
           <p className="eyebrow">A Green Dog Production · Issue 01</p>
           <h1 className="mt-4 text-5xl sm:text-7xl font-extrabold leading-[0.95] tracking-tight">
-            The <span className="text-sage-700">Vet&rsquo;s</span> Eye View.
+            See Your Pet
             <br />
-            <span className="text-sage-500">Wellness in focus.</span>
+            Through a <span className="text-sage-700">Vet&rsquo;s</span> Eyes.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-sage-800 leading-relaxed">
             Petspective is a clinical-grade audio brief from Green Dog &mdash;

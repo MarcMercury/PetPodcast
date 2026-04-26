@@ -106,16 +106,9 @@ export default async function HomePage({
       {/* Hero — the cover IS the brand. */}
       <section className="relative overflow-hidden border-b border-bone bg-ink">
         <div className="mx-auto max-w-6xl px-6 pt-12 pb-16">
-          {/* Top deck — mirrors the "A PODCAST BY EXPERT VETS" line on the cover. */}
-          <div className="flex items-center justify-center gap-3 text-sage-300">
-            <span className="eq-bars" aria-hidden>
-              <span /><span /><span /><span /><span />
-            </span>
-            <span className="deck-label text-[11px] text-sage-300">A Podcast by Expert Vets</span>
-          </div>
-
-          {/* The title cover, full-bleed inside the hero. */}
-          <div className="mt-8 rounded-3xl overflow-hidden ring-1 ring-bone shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)]">
+          {/* The title cover, full-bleed inside the hero. The cover art already
+              carries the "A PODCAST BY EXPERT VETS" deck, so we don't repeat it here. */}
+          <div className="rounded-3xl overflow-hidden ring-1 ring-bone shadow-[0_30px_80px_-30px_rgba(0,0,0,0.8)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/brand/title-cover.png"
@@ -127,12 +120,8 @@ export default async function HomePage({
 
           {/* CTA row — quiet, sits below the cover so the art carries the page. */}
           <div className="mt-10 flex flex-col items-center text-center">
-            <span className="sage-rule" aria-hidden />
-            <p className="mt-5 deck-label text-xs text-sage-200">
-              Clinical-grade audio. Real veterinarians. The questions you Google at 2am.
-            </p>
-            <div className="mt-7 flex flex-wrap justify-center gap-3">
-              <a href="#episodes" className="btn-primary">▶ Listen Now</a>
+            <div className="flex flex-wrap justify-center gap-3">
+              <a href="/episodes" className="btn-primary">▶ Listen Now</a>
               <a href="#ask" className="btn-ghost">Ask a Vet</a>
             </div>
             <div className="mt-8 flex items-center gap-4 text-[10px] text-sage-300/70 font-deck uppercase tracking-deck">

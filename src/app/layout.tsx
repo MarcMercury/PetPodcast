@@ -60,7 +60,7 @@ function SiteHeader() {
           <Wordmark />
         </a>
         <nav className="flex items-center gap-6 text-sm text-sage-200">
-          <a href="/#episodes" className="hover:text-sage-300 transition">Episodes</a>
+          <a href="/episodes" className="hover:text-sage-300 transition">Episodes</a>
           <a href="/breeds" className="hover:text-sage-300 transition">Breeds</a>
           <a href="/#vets" className="hover:text-sage-300 transition">The Pack</a>
           <a href="/recalls" className="hover:text-sage-300 transition">Recalls</a>

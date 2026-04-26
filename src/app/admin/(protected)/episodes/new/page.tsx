@@ -1,9 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createSupabaseBrowser } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
 type Step = 1 | 2 | 3 | 4;
+type BreedOpt = { slug: string; name: string };
 
 export default function NewEpisodePage() {
   const router = useRouter();
@@ -18,6 +19,9 @@ export default function NewEpisodePage() {
   const [description, setDescription] = useState('');
   const [season, setSeason] = useState('');
   const [episodeNumber, setEpisodeNumber] = useState('');
+  const [breedSpecies, setBreedSpecies] = useState<'' | 'dog' | 'cat'>('');
+  const [breedSlug, setBreedSlug] = useState('');
+  const [breedOptions, setBreedOptions] = useState<BreedOpt[]>([]);
   const [episodeId, setEpisodeId] = useState<string | null>(null);
 
   // Step 2
@@ -37,6 +41,27 @@ export default function NewEpisodePage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // ---------- Step 1: create draft ----------
+  useEffect(() => {
+    if (!breedSpecies) {
+      setBreedOptions([]);
+      setBreedSlug('');
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(`/api/breeds?species=${breedSpecies}`);
+        const j = await res.json();
+        if (!cancelled && Array.isArray(j.breeds)) setBreedOptions(j.breeds);
+      } catch {
+        if (!cancelled) setBreedOptions([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [breedSpecies]);
+
   const createDraft = async () => {
     setBusy('Creating draft…');
     setErr(null);
@@ -50,7 +75,9 @@ export default function NewEpisodePage() {
           slug,
           description,
           season: season ? parseInt(season) : null,
-          episode_number: episodeNumber ? parseInt(episodeNumber) : null
+          episode_number: episodeNumber ? parseInt(episodeNumber) : null,
+          breed_species: breedSpecies || null,
+          breed_slug: breedSpecies ? breedSlug || null : null
         })
       });
       const j = await res.json();
@@ -235,6 +262,39 @@ export default function NewEpisodePage() {
                 type="number"
                 className="rounded-xl border border-sage-200 px-4 py-3"
               />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <select
+                value={breedSpecies}
+                onChange={(e) => {
+                  setBreedSpecies(e.target.value as '' | 'dog' | 'cat');
+                  setBreedSlug('');
+                }}
+                className="rounded-xl border border-sage-200 px-4 py-3 bg-white"
+              >
+                <option value="">Featured species (optional)</option>
+                <option value="dog">Dog</option>
+                <option value="cat">Cat</option>
+              </select>
+              <select
+                value={breedSlug}
+                onChange={(e) => setBreedSlug(e.target.value)}
+                disabled={!breedSpecies || breedOptions.length === 0}
+                className="rounded-xl border border-sage-200 px-4 py-3 bg-white disabled:opacity-50"
+              >
+                <option value="">
+                  {breedSpecies
+                    ? breedOptions.length === 0
+                      ? 'Loading breeds…'
+                      : 'Featured breed (optional)'
+                    : 'Pick a species first'}
+                </option>
+                {breedOptions.map((b) => (
+                  <option key={b.slug} value={b.slug}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <button onClick={createDraft} disabled={!title || !!busy} className="btn-primary">
               Continue →

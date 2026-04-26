@@ -7,14 +7,20 @@ export async function POST(req: Request) {
   if ('error' in auth) return auth.error;
 
   const body = await req.json();
-  const { title, slug, description, season, episode_number, spotify_url } = body;
+  const {
+    title, slug, description, season, episode_number, spotify_url,
+    breed_species, breed_slug
+  } = body;
   if (!title || !slug) return NextResponse.json({ error: 'title & slug required' }, { status: 400 });
 
+  const species = breed_species === 'dog' || breed_species === 'cat' ? breed_species : null;
   const { data, error } = await supabaseAdmin
     .from('episodes')
     .insert({
       title, slug, description, season, episode_number,
       spotify_url: spotify_url || null,
+      breed_species: species,
+      breed_slug: species && breed_slug ? breed_slug : null,
       status: 'draft',
       created_by: auth.user.id
     })

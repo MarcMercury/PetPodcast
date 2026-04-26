@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { @apply antialiased; }
+  body { @apply bg-clinic text-sage-900 font-sans; }
+  h1, h2, h3 { @apply font-display tracking-tight; }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-full bg-sage-600 px-5 py-2.5
+           text-white font-medium hover:bg-sage-700 transition;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 rounded-full border border-sage-300
+           px-5 py-2.5 text-sage-800 hover:bg-sage-50 transition;
+  }
+  .card {
+    @apply rounded-2xl bg-white border border-sage-100 shadow-sm
+           hover:shadow-md transition overflow-hidden;
+  }
+}

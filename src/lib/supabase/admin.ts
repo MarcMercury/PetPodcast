@@ -1,9 +1,11 @@
 // Server-side Supabase client (service role) — NEVER import in client components.
 import { createClient } from '@supabase/supabase-js';
+import { assertPetSchema, PET_SCHEMA } from '@/lib/isolation';
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const schema = process.env.NEXT_PUBLIC_SUPABASE_SCHEMA || 'pet_podcast';
+const schema = process.env.NEXT_PUBLIC_SUPABASE_SCHEMA || PET_SCHEMA;
+assertPetSchema(schema);
 
 if (!url || !serviceKey) {
   // Fail loudly during dev/build; do NOT log values.
@@ -16,4 +18,4 @@ export const supabaseAdmin = createClient(url, serviceKey, {
   db: { schema }
 });
 
-export const PET_SCHEMA = schema;
+export { PET_SCHEMA };

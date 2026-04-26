@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { requireCreator } from '@/lib/auth';
+import { BUCKETS, assertPetBucket } from '@/lib/isolation';
 
-const IMG_BUCKET = process.env.SUPABASE_BUCKET_IMAGES || 'pet-podcast-images';
+const IMG_BUCKET = process.env.SUPABASE_BUCKET_IMAGES || BUCKETS.images;
+assertPetBucket(IMG_BUCKET);
 
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const auth = await requireCreator();

@@ -2,8 +2,10 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { requireCreator } from '@/lib/auth';
 import { transcribeAudio } from '@/lib/ai/openai';
+import { BUCKETS, assertPetBucket } from '@/lib/isolation';
 
-const AUDIO_BUCKET = process.env.SUPABASE_BUCKET_AUDIO || 'pet-podcast-audio';
+const AUDIO_BUCKET = process.env.SUPABASE_BUCKET_AUDIO || BUCKETS.audio;
+assertPetBucket(AUDIO_BUCKET);
 
 export const maxDuration = 300; // seconds — needed for long Whisper jobs (Vercel Pro)
 

@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { requireCreator } from '@/lib/auth';
+import { BUCKETS, assertPetBucket } from '@/lib/isolation';
 
-const AUDIO_BUCKET = process.env.SUPABASE_BUCKET_AUDIO || 'pet-podcast-audio';
+const AUDIO_BUCKET = process.env.SUPABASE_BUCKET_AUDIO || BUCKETS.audio;
+assertPetBucket(AUDIO_BUCKET);
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const auth = await requireCreator();

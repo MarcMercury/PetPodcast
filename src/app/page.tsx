@@ -1,6 +1,8 @@
 import { createSupabaseServer } from '@/lib/supabase/server';
 import type { AnimalType, Episode, Vet } from '@/lib/types';
 import Link from 'next/link';
+import RecallStrip from '@/components/recall-strip';
+import BreedOfWeek from '@/components/breed-of-week';
 
 // Filters depend on searchParams, so keep this dynamic.
 export const dynamic = 'force-dynamic';
@@ -285,6 +287,12 @@ export default async function HomePage({
           ))}
         </div>
       </section>
+
+      {/* Recall strip — FDA feed */}
+      <RecallStrip />
+
+      {/* Breed of the Week */}
+      <BreedOfWeek />
 
       {/* The Pack */}
       <section className="mx-auto max-w-6xl px-6 mt-24" id="vets">

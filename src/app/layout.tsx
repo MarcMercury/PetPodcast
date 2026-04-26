@@ -59,7 +59,9 @@ function SiteHeader() {
         </a>
         <nav className="flex items-center gap-6 text-sm">
           <a href="/#episodes" className="hover:text-sage-700">Episodes</a>
+          <a href="/breeds" className="hover:text-sage-700">Breeds</a>
           <a href="/#vets" className="hover:text-sage-700">The Pack</a>
+          <a href="/recalls" className="hover:text-sage-700">Recalls</a>
           <a href="/#ask" className="hover:text-sage-700">Ask a Vet</a>
           <a href="/admin" className="btn-ghost text-xs py-1.5">Studio</a>
         </nav>

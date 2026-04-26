@@ -30,6 +30,8 @@ export interface Episode {
   animal_types: AnimalType[];
   status: EpisodeStatus;
   published_at: string | null;
+  breed_species: 'dog' | 'cat' | null;
+  breed_slug: string | null;
   created_at: string;
 }
 

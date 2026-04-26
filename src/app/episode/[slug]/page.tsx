@@ -62,25 +62,25 @@ export default async function EpisodePage({ params }: { params: { slug: string }
       {/* Header */}
       <p className="eyebrow">Petspective · Episode</p>
       <header className="mt-3 grid sm:grid-cols-[220px,1fr] gap-6 items-start">
-        <div className="aspect-square rounded-2xl bg-bone overflow-hidden ring-1 ring-bone">
+        <div className="aspect-square rounded-2xl bg-bone overflow-hidden ring-1 ring-sage-700">
           {ep.image_url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={ep.image_url} alt={ep.title} className="w-full h-full object-cover" />
           )}
         </div>
         <div>
-          <p className="text-xs uppercase tracking-brand text-sage-700 font-semibold">
+          <p className="text-xs uppercase tracking-brand text-sage-300 font-semibold font-deck">
             {ep.season ? `Season ${ep.season} · ` : ''}
             {ep.episode_number ? `Episode ${ep.episode_number}` : ''}
           </p>
-          <h1 className="mt-2 text-4xl font-extrabold leading-tight tracking-tight">{ep.title}</h1>
+          <h1 className="mt-2 text-4xl font-display font-bold leading-tight tracking-tight">{ep.title}</h1>
           {vet && (
-            <p className="mt-3 text-sage-800">
-              with <strong>{(vet as Vet).name}</strong>
+            <p className="mt-3 text-sage-200">
+              with <strong className="text-cream">{(vet as Vet).name}</strong>
               {(vet as Vet).clinic_name && ` · ${(vet as Vet).clinic_name}`}
             </p>
           )}
-          <p className="mt-3 text-sage-700 leading-relaxed">{ep.description}</p>
+          <p className="mt-3 text-sage-200 leading-relaxed">{ep.description}</p>
         </div>
       </header>
 
@@ -126,7 +126,7 @@ export default async function EpisodePage({ params }: { params: { slug: string }
                 href={l.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="chip hover:bg-sage-50"
+                className="chip hover:bg-sage-700/40"
               >
                 {l.label}
               </a>
@@ -139,15 +139,15 @@ export default async function EpisodePage({ params }: { params: { slug: string }
       {notes && (
         <section className="mt-12">
           <p className="eyebrow">The Doctor’s Note</p>
-          <h2 className="mt-2 text-2xl font-extrabold tracking-tight">Show Notes</h2>
-          <p className="mt-4 whitespace-pre-line text-sage-900 leading-relaxed">
+          <h2 className="mt-2 text-2xl font-display font-bold tracking-tight">Show Notes</h2>
+          <p className="mt-4 whitespace-pre-line text-sage-100 leading-relaxed">
             {(notes as ShowNotes).summary}
           </p>
 
           {(notes as ShowNotes).key_takeaways?.length > 0 && (
             <>
-              <h3 className="mt-8 text-lg font-bold">Key Takeaways</h3>
-              <ul className="mt-3 space-y-2 list-disc list-inside text-sage-900">
+              <h3 className="mt-8 text-lg font-display font-bold">Key Takeaways</h3>
+              <ul className="mt-3 space-y-2 list-disc list-inside text-sage-100">
                 {(notes as ShowNotes).key_takeaways.map((k, i) => (
                   <li key={i}>{k}</li>
                 ))}

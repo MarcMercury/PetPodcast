@@ -11,9 +11,9 @@ import {
 } from '@/lib/fda-recalls';
 
 const TONE_CLASSES: Record<'red' | 'amber' | 'gray', string> = {
-  red: 'bg-red-50 text-red-800 ring-red-200',
-  amber: 'bg-amber-50 text-amber-800 ring-amber-200',
-  gray: 'bg-sage-50 text-sage-800 ring-sage-200'
+  red: 'bg-red-500/15 text-red-300 ring-red-400/40',
+  amber: 'bg-amber-500/15 text-amber-200 ring-amber-400/40',
+  gray: 'bg-sage-700/30 text-sage-200 ring-sage-500/40'
 };
 
 export default async function RecallStrip() {
@@ -29,7 +29,7 @@ export default async function RecallStrip() {
         </div>
         <Link
           href="/recalls"
-          className="text-xs text-sage-700 hover:text-sage-900 underline-offset-4 hover:underline"
+          className="text-xs text-sage-300 hover:text-cream underline-offset-4 hover:underline"
         >
           View all →
         </Link>
@@ -52,12 +52,12 @@ export default async function RecallStrip() {
                 >
                   {severity.label}
                 </span>
-                <span className="text-[10px] text-sage-600">
+                <span className="text-[10px] text-sage-400">
                   {formatRecallDate(r.report_date)}
                 </span>
               </div>
-              <h3 className="text-sm font-bold leading-snug line-clamp-2">{r.recalling_firm}</h3>
-              <p className="text-xs text-sage-700 line-clamp-3">{r.product_description}</p>
+              <h3 className="text-sm font-display font-bold leading-snug line-clamp-2 text-cream">{r.recalling_firm}</h3>
+              <p className="text-xs text-sage-200 line-clamp-3">{r.product_description}</p>
             </a>
           );
         })}

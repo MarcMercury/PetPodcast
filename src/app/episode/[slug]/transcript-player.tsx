@@ -81,7 +81,7 @@ export default function TranscriptPlayer({
           <select
             value={rate}
             onChange={(e) => setSpeed(parseFloat(e.target.value))}
-            className="rounded-full border border-sage-300 px-3 py-1.5 text-xs bg-white"
+            className="rounded-full border border-sage-700 bg-ink-soft text-cream px-3 py-1.5 text-xs"
             aria-label="Playback speed"
           >
             {[0.75, 1, 1.25, 1.5, 1.75, 2].map((r) => (
@@ -101,11 +101,11 @@ export default function TranscriptPlayer({
                   className={[
                     'shrink-0 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs transition border',
                     isActive
-                      ? 'bg-ink text-white border-ink shadow-sm'
-                      : 'bg-white border-bone text-sage-800 hover:border-sage-400 hover:text-sage-900'
+                      ? 'bg-sage-300 text-ink border-sage-300 shadow-sm'
+                      : 'bg-ink-soft border-bone text-sage-200 hover:border-sage-500 hover:text-cream'
                   ].join(' ')}
                 >
-                  <span className={`font-mono ${isActive ? 'text-sage-300' : 'text-sage-500'}`}>
+                  <span className={`font-mono ${isActive ? 'text-ink/70' : 'text-sage-400'}`}>
                     {formatTime(c.start)}
                   </span>
                   <span className="font-medium">{c.title}</span>
@@ -120,7 +120,7 @@ export default function TranscriptPlayer({
       {entityLinks.length > 0 && (
         <section className="mt-10">
           <p className="eyebrow">References</p>
-          <h2 className="mt-2 text-2xl font-extrabold tracking-tight">In this episode</h2>
+          <h2 className="mt-2 text-2xl font-display font-bold tracking-tight">In this episode</h2>
           <ul className="mt-4 grid sm:grid-cols-2 gap-3">
             {entityLinks.map((e, i) => (
               <li key={`${e.term}-${i}`} className="card p-4">
@@ -129,14 +129,14 @@ export default function TranscriptPlayer({
                     href={e.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-semibold text-sage-800 hover:text-sage-900 underline-offset-4 hover:underline"
+                    className="font-semibold text-cream hover:text-sage-300 underline-offset-4 hover:underline"
                   >
                     {e.term}
                   </a>
                   <span className="chip text-[10px]">{e.type}</span>
                 </div>
                 {e.description && (
-                  <p className="mt-1 text-sm text-sage-700 leading-snug">{e.description}</p>
+                  <p className="mt-1 text-sm text-sage-200 leading-snug">{e.description}</p>
                 )}
               </li>
             ))}
@@ -149,7 +149,7 @@ export default function TranscriptPlayer({
         <section className="mt-10">
           <p className="eyebrow">Optional reading view</p>
           <div className="mt-2 flex items-center justify-between gap-3 flex-wrap">
-            <h2 className="text-2xl font-extrabold tracking-tight">Transcript</h2>
+            <h2 className="text-2xl font-display font-bold tracking-tight">Transcript</h2>
             <button
               onClick={() => setShowTranscript((v) => !v)}
               className="btn-ghost text-xs"
@@ -158,7 +158,7 @@ export default function TranscriptPlayer({
               {showTranscript ? 'Hide transcript' : 'Show transcript'}
             </button>
           </div>
-          <p className="mt-1 text-sm text-sage-600">
+          <p className="mt-1 text-sm text-sage-300">
             Off by default. Key subjects link out to trusted references.
           </p>
           {showTranscript && (
@@ -191,15 +191,15 @@ function TranscriptBody({
   return (
     <div className="mt-4 space-y-2 max-h-[600px] overflow-y-auto pr-2 leading-relaxed">
       {segments.map((s, i) => (
-        <div key={i} className="rounded-lg px-3 py-2 hover:bg-sage-50">
+        <div key={i} className="rounded-lg px-3 py-2 hover:bg-sage-700/30">
           <button
             onClick={() => jump(s.start)}
-            className="text-xs text-sage-500 font-mono mr-3 hover:text-sage-700"
+            className="text-xs text-sage-400 font-mono mr-3 hover:text-sage-200"
             aria-label={`Jump to ${formatTime(s.start)}`}
           >
             {formatTime(s.start)}
           </button>
-          <span className="text-sage-900">
+          <span className="text-cream">
             {renderWithLinks(s.text, linker, linkedSoFar)}
           </span>
         </div>
@@ -256,7 +256,7 @@ function renderWithLinks(
           target="_blank"
           rel="noopener noreferrer"
           title={entity.description ?? `${entity.type} · opens in new tab`}
-          className="underline decoration-dotted decoration-sage-500 underline-offset-4 text-sage-800 hover:text-sage-900 hover:decoration-solid"
+          className="underline decoration-dotted decoration-sage-400 underline-offset-4 text-sage-300 hover:text-cream hover:decoration-solid"
         >
           {hit}
         </a>

@@ -49,19 +49,19 @@ export default async function BreedDetailPage({ params }: Params) {
   return (
     <article className="mx-auto max-w-5xl px-6 py-12">
       <p className="eyebrow">
-        <Link href="/breeds" className="hover:text-sage-900 underline-offset-4 hover:underline">
+        <Link href="/breeds" className="hover:text-cream underline-offset-4 hover:underline">
           Breeds
         </Link>
         {' · '}
         <Link
           href={`/breeds#${breed.species === 'dog' ? 'dogs' : 'cats'}`}
-          className="hover:text-sage-900 underline-offset-4 hover:underline"
+          className="hover:text-cream underline-offset-4 hover:underline"
         >
           {breed.species === 'dog' ? 'Dogs' : 'Cats'}
         </Link>
       </p>
       <header className="mt-3 grid md:grid-cols-[2fr,3fr] gap-8 items-start">
-        <div className="aspect-square rounded-2xl bg-bone overflow-hidden ring-1 ring-bone">
+        <div className="aspect-square rounded-2xl bg-bone overflow-hidden ring-1 ring-sage-700">
           {breed.imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={breed.imageUrl} alt={breed.name} className="w-full h-full object-cover" />
@@ -72,12 +72,12 @@ export default async function BreedDetailPage({ params }: Params) {
           )}
         </div>
         <div>
-          <h1 className="text-4xl font-extrabold leading-tight tracking-tight">{breed.name}</h1>
+          <h1 className="text-4xl font-display font-bold leading-tight tracking-tight">{breed.name}</h1>
           {breed.temperament && (
-            <p className="mt-2 text-sage-700 italic">{breed.temperament}</p>
+            <p className="mt-2 text-sage-300 italic">{breed.temperament}</p>
           )}
           {breed.description && (
-            <p className="mt-5 text-sage-900 leading-relaxed">{breed.description}</p>
+            <p className="mt-5 text-sage-100 leading-relaxed">{breed.description}</p>
           )}
           <dl className="mt-6 grid grid-cols-2 gap-4 text-sm">
             {breed.origin && <Stat label="Origin" value={breed.origin} />}
@@ -92,7 +92,7 @@ export default async function BreedDetailPage({ params }: Params) {
                 href={breed.wikipediaUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sage-700 underline underline-offset-4 hover:text-ink"
+                className="text-sage-300 underline underline-offset-4 hover:text-cream"
               >
                 Wikipedia →
               </a>
@@ -104,7 +104,7 @@ export default async function BreedDetailPage({ params }: Params) {
       {episodes.length > 0 && (
         <section className="mt-12">
           <p className="eyebrow">Featured on Petspective</p>
-          <h2 className="mt-2 text-2xl font-extrabold tracking-tight">
+          <h2 className="mt-2 text-2xl font-display font-bold tracking-tight">
             Episodes featuring the {breed.name}
           </h2>
           <div className="mt-5 grid sm:grid-cols-2 gap-4">
@@ -125,10 +125,10 @@ export default async function BreedDetailPage({ params }: Params) {
                     {ep.season ? `S${ep.season} · ` : ''}
                     {ep.episode_number ? `Ep ${ep.episode_number}` : 'Episode'}
                   </p>
-                  <h3 className="mt-1 font-bold leading-snug group-hover:text-sage-700 transition line-clamp-2">
+                  <h3 className="mt-1 font-display font-bold leading-snug group-hover:text-sage-300 transition line-clamp-2 text-cream">
                     {ep.title}
                   </h3>
-                  <p className="mt-1 text-xs text-sage-700 line-clamp-2">{ep.description}</p>
+                  <p className="mt-1 text-xs text-sage-200 line-clamp-2">{ep.description}</p>
                 </div>
               </Link>
             ))}
@@ -136,7 +136,7 @@ export default async function BreedDetailPage({ params }: Params) {
         </section>
       )}
 
-      <p className="mt-12 text-xs text-sage-600">
+      <p className="mt-12 text-xs text-sage-400">
         Source:{' '}
         <a
           href={breed.species === 'dog' ? 'https://thedogapi.com/' : 'https://thecatapi.com/'}
@@ -155,8 +155,8 @@ export default async function BreedDetailPage({ params }: Params) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-xs uppercase tracking-brand text-sage-600 font-semibold">{label}</dt>
-      <dd className="mt-1 text-sage-900">{value}</dd>
+      <dt className="text-xs uppercase tracking-brand text-sage-300 font-semibold font-deck">{label}</dt>
+      <dd className="mt-1 text-cream">{value}</dd>
     </div>
   );
 }

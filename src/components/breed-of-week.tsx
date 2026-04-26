@@ -28,19 +28,19 @@ export default async function BreedOfWeek() {
               {breed.species === 'dog' ? '🐕' : '🐈'}
             </div>
           )}
-          <span className="absolute top-4 left-4 chip bg-white/90 backdrop-blur">
+          <span className="absolute top-4 left-4 chip bg-ink/80 text-sage-200 backdrop-blur">
             {breed.species === 'dog' ? 'Dog' : 'Cat'}
           </span>
         </div>
-        <div className="p-8 md:p-10 flex flex-col justify-center bg-white">
-          <h2 className="text-3xl md:text-4xl font-extrabold leading-tight group-hover:text-sage-700 transition">
+        <div className="p-8 md:p-10 flex flex-col justify-center">
+          <h2 className="text-3xl md:text-4xl font-display font-bold leading-tight group-hover:text-sage-300 transition">
             {breed.name}
           </h2>
           {breed.temperament && (
-            <p className="mt-3 text-sage-700 italic line-clamp-2">{breed.temperament}</p>
+            <p className="mt-3 text-sage-300 italic line-clamp-2">{breed.temperament}</p>
           )}
           {breed.description && (
-            <p className="mt-4 text-sage-800 line-clamp-3 leading-relaxed">{breed.description}</p>
+            <p className="mt-4 text-sage-200 line-clamp-3 leading-relaxed">{breed.description}</p>
           )}
           <span className="mt-6 self-start btn-ghost">Read profile →</span>
         </div>

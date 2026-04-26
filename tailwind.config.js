@@ -4,35 +4,41 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Green Dog Aesthetic — clinical-yet-warm
+        // Petspective — Vet's Eye View palette (driven by the cover art).
         sage: {
           50: '#f3f8f4',
           100: '#e3efe5',
           200: '#c6dfca',
-          300: '#9cc6a4',
-          400: '#6ea77a',
-          500: '#4d8a5b',
-          600: '#3a6e47',
-          700: '#305839',
-          800: '#284730',
-          900: '#223b29'
+          300: '#9cc6a4', // primary accent on dark — matches "spective" green
+          400: '#7fb091',
+          500: '#5e9472',
+          600: '#467558',
+          700: '#345b44',
+          800: '#244334',
+          900: '#172d22'
         },
         teal: {
           soft: '#cfe7e3',
           warm: '#7fb8b1'
         },
-        clinic: '#fafbf9',
-        // Petspective brand palette — clinical-media hybrid
-        gallery: '#f7f7f5',   // gallery white background
-        ink: '#0e1411',       // off-black for high-contrast type / dark hero
-        bone: '#ecebe6'       // soft divider / chip background
+        clinic: '#0e1411',
+        // Surface tokens flipped to "studio dark" — the cover is the brand.
+        gallery: '#0b110e',     // page background (deep ink-green)
+        ink: '#080d0a',          // hero / footer / heaviest dark surface
+        'ink-soft': '#121a16',   // card / panel surface
+        bone: '#1d2a22',         // divider / hairline rule on dark
+        cream: '#ece9df'         // primary body type on dark
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Montserrat', 'Inter', 'sans-serif']
+        // Playfair Display = the serif on the cover wordmark.
+        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        // Montserrat for tracked uppercase decks ("VET'S EYE VIEW").
+        deck: ['Montserrat', 'Inter', 'sans-serif']
       },
       letterSpacing: {
-        brand: '0.18em'
+        brand: '0.18em',
+        deck: '0.32em'
       }
     }
   },

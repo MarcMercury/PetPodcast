@@ -4,21 +4,39 @@
 
 @layer base {
   html { @apply antialiased; }
-  body { @apply bg-clinic text-sage-900 font-sans; }
+  body { @apply bg-gallery text-ink font-sans; }
   h1, h2, h3 { @apply font-display tracking-tight; }
+  ::selection { @apply bg-sage-200 text-ink; }
 }
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center gap-2 rounded-full bg-sage-600 px-5 py-2.5
-           text-white font-medium hover:bg-sage-700 transition;
+    @apply inline-flex items-center gap-2 rounded-full bg-sage-700 px-5 py-2.5
+           text-white font-medium hover:bg-sage-800 transition shadow-sm;
   }
   .btn-ghost {
     @apply inline-flex items-center gap-2 rounded-full border border-sage-300
            px-5 py-2.5 text-sage-800 hover:bg-sage-50 transition;
   }
+  .btn-dark {
+    @apply inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5
+           text-white font-medium hover:bg-sage-900 transition;
+  }
   .card {
-    @apply rounded-2xl bg-white border border-sage-100 shadow-sm
+    @apply rounded-2xl bg-white border border-bone shadow-[0_1px_0_rgba(14,20,17,0.04)]
            hover:shadow-md transition overflow-hidden;
   }
+  .chip {
+    @apply inline-flex items-center rounded-full bg-bone px-2.5 py-0.5
+           text-[11px] font-medium text-sage-800 tracking-wide;
+  }
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-brand text-sage-700;
+  }
+  .wordmark {
+    @apply font-display font-extrabold tracking-tight;
+  }
+  .wordmark .pet { @apply text-ink; }
+  .wordmark .spective { @apply text-sage-700; }
+  .wordmark .dot { @apply text-sage-500; }
 }

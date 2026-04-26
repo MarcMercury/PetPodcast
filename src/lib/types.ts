@@ -38,11 +38,29 @@ export interface TranscriptSegment {
   text: string;
 }
 
+export type EntityLinkType =
+  | 'condition'
+  | 'medication'
+  | 'breed'
+  | 'procedure'
+  | 'organization'
+  | 'product'
+  | 'nutrient'
+  | 'other';
+
+export interface EntityLink {
+  term: string;
+  type: EntityLinkType;
+  url: string;
+  description?: string;
+}
+
 export interface Transcript {
   episode_id: string;
   raw_text: string | null;
   segments: TranscriptSegment[];
   language: string | null;
+  entity_links: EntityLink[];
 }
 
 export interface ShowNotes {

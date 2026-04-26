@@ -27,6 +27,9 @@ export default function NewEpisodePage() {
   // Step 3
   const [transcriptPreview, setTranscriptPreview] = useState<string>('');
   const [showNotes, setShowNotes] = useState<any>(null);
+  const [entityLinks, setEntityLinks] = useState<
+    { term: string; type: string; url: string; description?: string }[]
+  >([]);
 
   // Step 4
   const [imagePrompt, setImagePrompt] = useState('');
@@ -110,6 +113,17 @@ export default function NewEpisodePage() {
       if (!res.ok) throw new Error(j.error);
       setShowNotes(j);
       setImagePrompt(j.suggested_image_prompt || '');
+    } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
+  };
+
+  const runLinkEntities = async () => {
+    setBusy('Linking key subjects to outside sources…');
+    setErr(null);
+    try {
+      const res = await fetch(`/api/admin/episodes/${episodeId}/link-entities`, { method: 'POST' });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error);
+      setEntityLinks(j.entity_links ?? []);
     } catch (e: any) { setErr(e.message); } finally { setBusy(null); }
   };
 
@@ -265,6 +279,13 @@ export default function NewEpisodePage() {
               >
                 📝 Generate Show Notes (Gemini)
               </button>
+              <button
+                onClick={runLinkEntities}
+                disabled={!!busy || !transcriptPreview}
+                className="btn-primary"
+              >
+                🔗 Link Key Subjects (Gemini)
+              </button>
             </div>
             {transcriptPreview && (
               <div>
@@ -272,6 +293,34 @@ export default function NewEpisodePage() {
                 <p className="mt-2 text-sm text-sage-800 whitespace-pre-line">
                   {transcriptPreview}…
                 </p>
+              </div>
+            )}
+            {entityLinks.length > 0 && (
+              <div className="mt-4">
+                <h3 className="font-semibold text-sm uppercase text-sage-600">
+                  Auto-linked subjects ({entityLinks.length})
+                </h3>
+                <ul className="mt-2 grid sm:grid-cols-2 gap-2 text-sm">
+                  {entityLinks.map((e) => (
+                    <li key={e.term} className="rounded-lg border border-sage-100 px-3 py-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-medium">{e.term}</span>
+                        <span className="text-xs uppercase text-sage-500">{e.type}</span>
+                      </div>
+                      <a
+                        href={e.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-sage-700 underline break-all"
+                      >
+                        {e.url}
+                      </a>
+                      {e.description && (
+                        <p className="mt-1 text-xs text-sage-600">{e.description}</p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
             {showNotes && (

@@ -1,79 +1,183 @@
 import { createSupabaseServer } from '@/lib/supabase/server';
-import type { Episode, Vet } from '@/lib/types';
+import type { AnimalType, Episode, Vet } from '@/lib/types';
 import Link from 'next/link';
 
-export const revalidate = 60;
+// Filters depend on searchParams, so keep this dynamic.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-const ANIMAL_FILTERS = [
-  { key: 'canine', label: 'Dogs 🐶' },
-  { key: 'feline', label: 'Cats 🐱' },
-  { key: 'exotic', label: 'Exotic 🦎' },
-  { key: 'avian', label: 'Birds 🦜' },
-  { key: 'equine', label: 'Equine 🐴' }
+const ANIMAL_FILTERS: { key: AnimalType; label: string }[] = [
+  { key: 'canine', label: 'Dogs' },
+  { key: 'feline', label: 'Cats' },
+  { key: 'exotic', label: 'Exotic' },
+  { key: 'avian', label: 'Birds' },
+  { key: 'equine', label: 'Equine' }
 ];
 
 const TOPICS = ['Nutrition', 'Surgery', 'Dental', 'Behavior', 'Wellness', 'Emergency'];
 
-export default async function HomePage() {
+const ANIMAL_KEYS = new Set(ANIMAL_FILTERS.map((f) => f.key));
+
+function fmtDuration(sec?: number | null) {
+  if (!sec) return null;
+  const m = Math.round(sec / 60);
+  return `${m} min`;
+}
+
+function buildHref(params: { animal?: string; topic?: string }) {
+  const sp = new URLSearchParams();
+  if (params.animal) sp.set('animal', params.animal);
+  if (params.topic) sp.set('topic', params.topic);
+  const qs = sp.toString();
+  return qs ? `/?${qs}#episodes` : '/#episodes';
+}
+
+export default async function HomePage({
+  searchParams
+}: {
+  searchParams?: { animal?: string; topic?: string };
+}) {
   const supabase = createSupabaseServer();
 
+  const animal =
+    searchParams?.animal && ANIMAL_KEYS.has(searchParams.animal as AnimalType)
+      ? (searchParams.animal as AnimalType)
+      : undefined;
+  const topic =
+    searchParams?.topic && TOPICS.includes(searchParams.topic) ? searchParams.topic : undefined;
+
+  // If a topic is selected, resolve it to a set of episode IDs via the tags join table.
+  let topicEpisodeIds: string[] | null = null;
+  if (topic) {
+    const slug = topic.toLowerCase();
+    const { data: tag } = await supabase
+      .from('tags')
+      .select('id')
+      .or(`slug.eq.${slug},name.ilike.${topic}`)
+      .maybeSingle();
+    if (tag?.id) {
+      const { data: links } = await supabase
+        .from('episode_tags')
+        .select('episode_id')
+        .eq('tag_id', tag.id);
+      topicEpisodeIds = (links ?? []).map((l) => l.episode_id as string);
+    } else {
+      topicEpisodeIds = [];
+    }
+  }
+
+  let epQuery = supabase
+    .from('episodes')
+    .select('*')
+    .eq('status', 'published')
+    .order('published_at', { ascending: false })
+    .limit(12);
+
+  if (animal) {
+    // animal_types is a Postgres enum array — `@>` does an array contains check.
+    epQuery = epQuery.contains('animal_types', [animal]);
+  }
+  if (topicEpisodeIds !== null) {
+    if (topicEpisodeIds.length === 0) {
+      // No tagged episodes — short-circuit to an empty result.
+      epQuery = epQuery.eq('id', '00000000-0000-0000-0000-000000000000');
+    } else {
+      epQuery = epQuery.in('id', topicEpisodeIds);
+    }
+  }
+
   const [{ data: episodes }, { data: vets }] = await Promise.all([
-    supabase
-      .from('episodes')
-      .select('*')
-      .eq('status', 'published')
-      .order('published_at', { ascending: false })
-      .limit(12),
+    epQuery,
     supabase.from('vets').select('*').limit(8)
   ]);
 
-  const featured = episodes?.[0] as Episode | undefined;
-  const rest = (episodes ?? []).slice(1) as Episode[];
+  const filterActive = Boolean(animal || topic);
+  // When filters are active, don't promote any episode to "Featured Scope" — show
+  // the full filtered list as a clean grid instead.
+  const featured = !filterActive ? (episodes?.[0] as Episode | undefined) : undefined;
+  const rest = (
+    filterActive ? (episodes ?? []) : (episodes ?? []).slice(1)
+  ) as Episode[];
 
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-6xl px-6 pt-20 pb-16">
-          <p className="text-sage-600 font-medium tracking-wide uppercase text-xs">
-            A Green Dog Production
-          </p>
-          <h1 className="mt-3 text-5xl sm:text-6xl font-extrabold leading-tight">
-            Real Vets. <span className="text-sage-600">Real Advice.</span>
-            <br /> Real Pet Stories.
+      <section className="relative overflow-hidden border-b border-bone">
+        <div className="mx-auto max-w-6xl px-6 pt-20 pb-20">
+          <p className="eyebrow">A Green Dog Production · Issue 01</p>
+          <h1 className="mt-4 text-5xl sm:text-7xl font-extrabold leading-[0.95] tracking-tight">
+            The <span className="text-sage-700">Vet&rsquo;s</span> Eye View.
+            <br />
+            <span className="text-sage-500">Wellness in focus.</span>
           </h1>
-          <p className="mt-5 max-w-2xl text-lg text-sage-700">
-            Honest conversations with practicing veterinarians on nutrition,
-            surgery, behavior, and the questions every pet owner Googles at 2am.
+          <p className="mt-6 max-w-2xl text-lg text-sage-800 leading-relaxed">
+            Petspective is a clinical-grade audio brief from Green Dog &mdash;
+            real veterinarians on nutrition, surgery, behavior, and the
+            questions every pet owner Googles at 2am.
           </p>
-          <div className="mt-8 flex gap-3">
-            <a href="#episodes" className="btn-primary">▶ Listen Now</a>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a href="#episodes" className="btn-dark">▶ Listen Now</a>
             <a href="#ask" className="btn-ghost">Ask a Vet</a>
+          </div>
+          <div className="mt-10 flex items-center gap-6 text-xs text-sage-600 uppercase tracking-brand">
+            <span>Vol. 01</span>
+            <span aria-hidden>·</span>
+            <span>Clinical Media</span>
+            <span aria-hidden>·</span>
+            <span>www.podcast.pet</span>
           </div>
         </div>
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-32 -top-32 h-[500px] w-[500px] rounded-full bg-sage-200/40 blur-3xl"
+          className="pointer-events-none absolute -right-40 -top-40 h-[560px] w-[560px] rounded-full bg-sage-200/50 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-32 bottom-[-120px] h-[320px] w-[320px] rounded-full bg-teal-soft/60 blur-3xl"
         />
       </section>
 
-      {/* Featured Episode */}
+      {/* Featured Scope */}
       {featured && (
-        <section className="mx-auto max-w-6xl px-6">
-          <div className="card grid md:grid-cols-[2fr,3fr]">
-            <div className="aspect-square md:aspect-auto bg-sage-100">
-              {featured.image_url && (
+        <section className="mx-auto max-w-6xl px-6 mt-16">
+          <div className="flex items-center justify-between mb-4">
+            <p className="eyebrow">Featured Scope · Latest Check-up</p>
+            <Link
+              href={`/episode/${featured.slug}`}
+              className="text-xs text-sage-700 hover:text-sage-900 underline-offset-4 hover:underline"
+            >
+              View episode →
+            </Link>
+          </div>
+          <div className="card grid md:grid-cols-[3fr,4fr] overflow-hidden">
+            <div className="aspect-square md:aspect-auto bg-bone relative">
+              {featured.image_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={featured.image_url} alt={featured.title} className="w-full h-full object-cover" />
+                <img
+                  src={featured.image_url}
+                  alt={featured.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full grid place-items-center text-7xl">🩺</div>
               )}
+              <span className="absolute top-4 left-4 chip bg-white/90 backdrop-blur">On Air</span>
             </div>
-            <div className="p-8 flex flex-col justify-center">
-              <span className="text-xs uppercase tracking-wider text-sage-600 font-semibold">
-                Latest Check-up
-              </span>
-              <h2 className="mt-2 text-3xl font-bold">{featured.title}</h2>
-              <p className="mt-3 text-sage-700 line-clamp-3">{featured.description}</p>
-              <Link href={`/episode/${featured.slug}`} className="btn-primary mt-6 self-start">
+            <div className="p-8 md:p-10 flex flex-col justify-center bg-white">
+              <p className="eyebrow">
+                {featured.season ? `S${featured.season} · ` : ''}
+                {featured.episode_number ? `Ep ${featured.episode_number}` : 'New Episode'}
+                {fmtDuration(featured.duration_seconds)
+                  ? ` · ${fmtDuration(featured.duration_seconds)}`
+                  : ''}
+              </p>
+              <h2 className="mt-3 text-3xl md:text-4xl font-extrabold leading-tight">
+                {featured.title}
+              </h2>
+              <p className="mt-4 text-sage-800 line-clamp-3 leading-relaxed">
+                {featured.description}
+              </p>
+              <Link href={`/episode/${featured.slug}`} className="btn-primary mt-7 self-start">
                 ▶ Play Episode
               </Link>
             </div>
@@ -81,97 +185,167 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Filters */}
-      <section className="mx-auto max-w-6xl px-6 mt-16" id="episodes">
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-2xl font-bold mr-4">Episodes</h2>
-          {ANIMAL_FILTERS.map((f) => (
-            <button key={f.key} className="btn-ghost text-xs py-1.5">
-              {f.label}
-            </button>
-          ))}
-          <span className="mx-2 h-6 w-px bg-sage-200" />
-          {TOPICS.map((t) => (
-            <button key={t} className="btn-ghost text-xs py-1.5">
-              {t}
-            </button>
-          ))}
+      {/* Filters + Feed */}
+      <section className="mx-auto max-w-6xl px-6 mt-20" id="episodes">
+        <div className="flex items-end justify-between flex-wrap gap-4">
+          <div>
+            <p className="eyebrow">The Feed</p>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight">
+              {filterActive ? 'Filtered Episodes' : 'All Episodes'}
+            </h2>
+            {filterActive && (
+              <p className="mt-1 text-sm text-sage-700">
+                {[
+                  animal && ANIMAL_FILTERS.find((f) => f.key === animal)?.label,
+                  topic && `#${topic}`
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+                <Link href="/#episodes" className="ml-3 text-sage-600 hover:text-sage-900 underline-offset-4 hover:underline">
+                  Clear
+                </Link>
+              </p>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={buildHref({ topic })}
+              className={`chip ${!animal ? 'bg-ink text-white' : 'hover:bg-sage-100'} transition`}
+            >
+              All
+            </Link>
+            {ANIMAL_FILTERS.map((f) => {
+              const active = animal === f.key;
+              return (
+                <Link
+                  key={f.key}
+                  href={buildHref({ animal: active ? undefined : f.key, topic })}
+                  className={`chip ${active ? 'bg-ink text-white' : 'hover:bg-sage-100'} transition`}
+                  aria-pressed={active}
+                >
+                  {f.label}
+                </Link>
+              );
+            })}
+            <span className="mx-2 h-5 w-px bg-bone" />
+            {TOPICS.map((t) => {
+              const active = topic === t;
+              return (
+                <Link
+                  key={t}
+                  href={buildHref({ animal, topic: active ? undefined : t })}
+                  className={`chip ${active ? 'bg-ink text-white' : 'hover:bg-sage-100'} transition`}
+                  aria-pressed={active}
+                >
+                  {t}
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Episode Grid (the "Clinic Floor") */}
         <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {rest.length === 0 && !featured && (
-            <p className="text-sage-600">No episodes published yet — check back soon.</p>
+            <p className="text-sage-600 col-span-full">
+              {filterActive
+                ? 'No episodes match these filters yet.'
+                : 'No episodes published yet — check back soon.'}
+            </p>
           )}
           {rest.map((ep) => (
-            <Link key={ep.id} href={`/episode/${ep.slug}`} className="card group">
-              <div className="aspect-square bg-sage-100 overflow-hidden">
+            <Link key={ep.id} href={`/episode/${ep.slug}`} className="card group flex flex-col">
+              <div className="aspect-square bg-bone overflow-hidden relative">
                 {ep.image_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={ep.image_url}
                     alt={ep.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition"
+                    className="w-full h-full object-cover group-hover:scale-[1.03] transition"
                   />
                 ) : (
                   <div className="w-full h-full grid place-items-center text-6xl">🐾</div>
                 )}
+                {fmtDuration(ep.duration_seconds) && (
+                  <span className="absolute bottom-3 right-3 chip bg-ink/80 text-white border-0">
+                    {fmtDuration(ep.duration_seconds)}
+                  </span>
+                )}
               </div>
-              <div className="p-5">
-                <h3 className="font-bold text-lg leading-snug">{ep.title}</h3>
-                <p className="text-sm text-sage-600 mt-1 line-clamp-2">
-                  {ep.description}
+              <div className="p-5 flex-1 flex flex-col">
+                <p className="eyebrow text-[10px]">
+                  {ep.season ? `S${ep.season} · ` : ''}
+                  {ep.episode_number ? `Ep ${ep.episode_number}` : 'Episode'}
                 </p>
+                <h3 className="mt-2 font-bold text-lg leading-snug group-hover:text-sage-700 transition">
+                  {ep.title}
+                </h3>
+                <p className="text-sm text-sage-700 mt-2 line-clamp-2 flex-1">{ep.description}</p>
               </div>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Vet Directory */}
-      <section className="mx-auto max-w-6xl px-6 mt-20" id="vets">
-        <h2 className="text-2xl font-bold">Meet the Vets</h2>
-        <div className="mt-6 grid sm:grid-cols-2 md:grid-cols-4 gap-6">
+      {/* The Pack */}
+      <section className="mx-auto max-w-6xl px-6 mt-24" id="vets">
+        <p className="eyebrow">The Pack</p>
+        <h2 className="mt-2 text-3xl font-extrabold tracking-tight">Meet the Vets</h2>
+        <p className="mt-2 text-sage-700 max-w-2xl">
+          Practicing veterinarians from the Green Dog network &mdash; the voices behind every
+          Petspective episode.
+        </p>
+        <div className="mt-8 grid sm:grid-cols-2 md:grid-cols-4 gap-6">
           {(vets ?? []).map((v: Vet) => (
-            <div key={v.id} className="card p-5 text-center">
-              <div className="mx-auto h-24 w-24 rounded-full bg-sage-100 overflow-hidden">
+            <div key={v.id} className="card p-6 text-center">
+              <div className="mx-auto h-24 w-24 rounded-full bg-bone overflow-hidden ring-1 ring-bone">
                 {v.bio_photo_url && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={v.bio_photo_url} alt={v.name} className="h-full w-full object-cover" />
                 )}
               </div>
-              <h3 className="mt-3 font-semibold">{v.name}</h3>
-              <p className="text-xs text-sage-600">{v.specialty}</p>
+              <h3 className="mt-4 font-semibold">{v.name}</h3>
+              <p className="text-xs text-sage-700">{v.specialty}</p>
               <p className="text-xs text-sage-500 mt-1">{v.clinic_location}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Ask a Vet */}
-      <section className="mx-auto max-w-3xl px-6 mt-20" id="ask">
-        <div className="card p-8">
-          <h2 className="text-2xl font-bold">Ask a Vet</h2>
-          <p className="text-sage-700 mt-1">
-            Submit a question and we may answer it on a future episode.
+      {/* The Mailbag */}
+      <section className="mx-auto max-w-3xl px-6 mt-24" id="ask">
+        <div className="card p-8 md:p-10 bg-ink text-white border-ink">
+          <p className="eyebrow text-sage-300">The Mailbag</p>
+          <h2 className="mt-2 text-3xl font-extrabold tracking-tight">Ask a Vet</h2>
+          <p className="text-sage-100/80 mt-2 max-w-xl">
+            Drop a question. We may answer it on a future Petspective episode.
           </p>
-          <form action="/api/mailbag" method="post" className="mt-5 grid gap-3">
+          <form action="/api/mailbag" method="post" className="mt-6 grid gap-3">
             <input
               name="email"
               type="email"
               required
               placeholder="your@email.com"
-              className="rounded-xl border border-sage-200 bg-white px-4 py-3"
+              className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 placeholder:text-sage-300/60 focus:outline-none focus:border-sage-400"
             />
             <textarea
               name="question"
               required
               rows={4}
               placeholder="What's going on with your pet?"
-              className="rounded-xl border border-sage-200 bg-white px-4 py-3"
+              className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 placeholder:text-sage-300/60 focus:outline-none focus:border-sage-400"
             />
             <button className="btn-primary self-start">Submit Question</button>
           </form>
+          <p className="mt-5 text-xs text-sage-300/80">
+            Prefer email? Reach us at{' '}
+            <a
+              href="mailto:petpodcast.pet@gmail.com"
+              className="text-white underline underline-offset-4 hover:text-sage-200"
+            >
+              petpodcast.pet@gmail.com
+            </a>
+            .
+          </p>
         </div>
       </section>
     </>

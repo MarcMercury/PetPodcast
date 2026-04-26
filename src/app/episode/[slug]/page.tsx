@@ -1,9 +1,33 @@
 import { createSupabaseServer } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
 import type { Episode, ShowNotes, Transcript, Vet } from '@/lib/types';
+import type { Metadata } from 'next';
 import TranscriptPlayer from './transcript-player';
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const supabase = createSupabaseServer();
+  const { data } = await supabase
+    .from('episodes')
+    .select('title,description,image_url')
+    .eq('slug', params.slug)
+    .eq('status', 'published')
+    .maybeSingle();
+  if (!data) return { title: 'Petspective' };
+  const ep = data as Pick<Episode, 'title' | 'description' | 'image_url'>;
+  return {
+    title: `${ep.title} — Petspective`,
+    description: ep.description ?? 'The Vet’s Eye View — a Green Dog production.',
+    openGraph: {
+      title: `${ep.title} — Petspective`,
+      description: ep.description ?? '',
+      images: ep.image_url ? [{ url: ep.image_url }] : undefined,
+      siteName: 'Petspective',
+      type: 'article'
+    }
+  };
+}
 
 export default async function EpisodePage({ params }: { params: { slug: string } }) {
   const supabase = createSupabaseServer();
@@ -29,26 +53,27 @@ export default async function EpisodePage({ params }: { params: { slug: string }
   return (
     <article className="mx-auto max-w-4xl px-6 py-12">
       {/* Header */}
-      <header className="grid sm:grid-cols-[200px,1fr] gap-6 items-start">
-        <div className="aspect-square rounded-2xl bg-sage-100 overflow-hidden">
+      <p className="eyebrow">Petspective · Episode</p>
+      <header className="mt-3 grid sm:grid-cols-[220px,1fr] gap-6 items-start">
+        <div className="aspect-square rounded-2xl bg-bone overflow-hidden ring-1 ring-bone">
           {ep.image_url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={ep.image_url} alt={ep.title} className="w-full h-full object-cover" />
           )}
         </div>
         <div>
-          <p className="text-xs uppercase tracking-wider text-sage-600 font-semibold">
+          <p className="text-xs uppercase tracking-brand text-sage-700 font-semibold">
             {ep.season ? `Season ${ep.season} · ` : ''}
             {ep.episode_number ? `Episode ${ep.episode_number}` : ''}
           </p>
-          <h1 className="mt-2 text-4xl font-extrabold leading-tight">{ep.title}</h1>
+          <h1 className="mt-2 text-4xl font-extrabold leading-tight tracking-tight">{ep.title}</h1>
           {vet && (
-            <p className="mt-3 text-sage-700">
+            <p className="mt-3 text-sage-800">
               with <strong>{(vet as Vet).name}</strong>
               {(vet as Vet).clinic_name && ` · ${(vet as Vet).clinic_name}`}
             </p>
           )}
-          <p className="mt-3 text-sage-700">{ep.description}</p>
+          <p className="mt-3 text-sage-700 leading-relaxed">{ep.description}</p>
         </div>
       </header>
 
@@ -57,20 +82,23 @@ export default async function EpisodePage({ params }: { params: { slug: string }
         audioUrl={ep.audio_url ?? ''}
         title={ep.title}
         segments={(transcript as Transcript | null)?.segments ?? []}
+        chapters={(notes as ShowNotes | null)?.chapters ?? []}
+        entityLinks={(transcript as Transcript | null)?.entity_links ?? []}
       />
 
       {/* Show Notes */}
       {notes && (
         <section className="mt-12">
-          <h2 className="text-2xl font-bold">The Doctor’s Note</h2>
-          <p className="mt-3 whitespace-pre-line text-sage-800 leading-relaxed">
+          <p className="eyebrow">The Doctor’s Note</p>
+          <h2 className="mt-2 text-2xl font-extrabold tracking-tight">Show Notes</h2>
+          <p className="mt-4 whitespace-pre-line text-sage-900 leading-relaxed">
             {(notes as ShowNotes).summary}
           </p>
 
           {(notes as ShowNotes).key_takeaways?.length > 0 && (
             <>
               <h3 className="mt-8 text-lg font-bold">Key Takeaways</h3>
-              <ul className="mt-3 space-y-2 list-disc list-inside text-sage-800">
+              <ul className="mt-3 space-y-2 list-disc list-inside text-sage-900">
                 {(notes as ShowNotes).key_takeaways.map((k, i) => (
                   <li key={i}>{k}</li>
                 ))}

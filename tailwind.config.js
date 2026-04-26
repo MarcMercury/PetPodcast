@@ -21,11 +21,18 @@ module.exports = {
           soft: '#cfe7e3',
           warm: '#7fb8b1'
         },
-        clinic: '#fafbf9'
+        clinic: '#fafbf9',
+        // Petspective brand palette — clinical-media hybrid
+        gallery: '#f7f7f5',   // gallery white background
+        ink: '#0e1411',       // off-black for high-contrast type / dark hero
+        bone: '#ecebe6'       // soft divider / chip background
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Montserrat', 'Inter', 'sans-serif']
+      },
+      letterSpacing: {
+        brand: '0.18em'
       }
     }
   },

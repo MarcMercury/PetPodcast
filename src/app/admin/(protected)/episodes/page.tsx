@@ -1,8 +1,8 @@
-import { createSupabaseServer } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import Link from 'next/link';
 
 export default async function EpisodesAdminList() {
-  const supabase = createSupabaseServer();
+  const supabase = supabaseAdmin;
   const { data: episodes } = await supabase
     .from('episodes')
     .select('id, slug, title, status, published_at, created_at')

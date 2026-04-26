@@ -1,4 +1,5 @@
 import { createSupabaseServer } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
@@ -9,7 +10,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   // Gate: must be signed in + role admin/vet.
   if (!user) redirect('/admin/login');
 
-  const { data: profile } = await supabase
+  // Use service-role to read the profile so RLS doesn't block the role lookup.
+  // Safe: we already verified the user via getUser() above.
+  const { data: profile } = await supabaseAdmin
     .from('profiles')
     .select('role')
     .eq('id', user.id)

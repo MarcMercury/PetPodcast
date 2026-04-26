@@ -1,8 +1,8 @@
-import { createSupabaseServer } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import Link from 'next/link';
 
 export default async function AdminHome() {
-  const supabase = createSupabaseServer();
+  const supabase = supabaseAdmin;
   const { count: total } = await supabase
     .from('episodes')
     .select('id', { count: 'exact', head: true });

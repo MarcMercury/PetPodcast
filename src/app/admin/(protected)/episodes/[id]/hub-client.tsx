@@ -230,41 +230,68 @@ export default function EpisodeHubClient({
 
       <Step n={1} label="Basic info" done={Boolean(episode.title)}>
         <div className="grid gap-3 max-w-2xl">
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Episode title"
-            className="rounded-xl border border-sage-200 px-4 py-3"
-          />
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Short description"
-            rows={4}
-            className="rounded-xl border border-sage-200 px-4 py-3"
-          />
+          <label className="grid gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wide text-sage-600">
+              Title
+            </span>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Episode 0 — Introduction"
+              className="rounded-xl border border-sage-200 bg-white px-4 py-3 text-ink placeholder:text-sage-400"
+            />
+          </label>
+          <label className="grid gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wide text-sage-600">
+              Description
+            </span>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="A short promo. Who Petspective is for, why we made it, and how the show works: one planned topic, one wildcard round pulled live from the listener mailbag."
+              rows={4}
+              className="rounded-xl border border-sage-200 bg-white px-4 py-3 text-ink placeholder:text-sage-400"
+            />
+          </label>
           <div className="grid grid-cols-2 gap-3">
-            <input
-              value={season}
-              onChange={(e) => setSeason(e.target.value)}
-              placeholder="Season"
-              type="number"
-              className="rounded-xl border border-sage-200 px-4 py-3"
-            />
-            <input
-              value={episodeNumber}
-              onChange={(e) => setEpisodeNumber(e.target.value)}
-              placeholder="Episode #"
-              type="number"
-              className="rounded-xl border border-sage-200 px-4 py-3"
-            />
+            <label className="grid gap-1">
+              <span className="text-xs font-semibold uppercase tracking-wide text-sage-600">
+                Season number
+              </span>
+              <input
+                value={season}
+                onChange={(e) => setSeason(e.target.value)}
+                placeholder="1"
+                type="number"
+                min={1}
+                className="rounded-xl border border-sage-200 bg-white px-4 py-3 text-ink placeholder:text-sage-400"
+              />
+            </label>
+            <label className="grid gap-1">
+              <span className="text-xs font-semibold uppercase tracking-wide text-sage-600">
+                Episode number
+              </span>
+              <input
+                value={episodeNumber}
+                onChange={(e) => setEpisodeNumber(e.target.value)}
+                placeholder="0"
+                type="number"
+                min={0}
+                className="rounded-xl border border-sage-200 bg-white px-4 py-3 text-ink placeholder:text-sage-400"
+              />
+            </label>
           </div>
-          <input
-            value={spotifyUrl}
-            onChange={(e) => setSpotifyUrl(e.target.value)}
-            placeholder="Spotify URL (optional)"
-            className="rounded-xl border border-sage-200 px-4 py-3"
-          />
+          <label className="grid gap-1">
+            <span className="text-xs font-semibold uppercase tracking-wide text-sage-600">
+              Spotify URL <span className="font-normal normal-case text-sage-500">(optional)</span>
+            </span>
+            <input
+              value={spotifyUrl}
+              onChange={(e) => setSpotifyUrl(e.target.value)}
+              placeholder="https://open.spotify.com/episode/…"
+              className="rounded-xl border border-sage-200 bg-white px-4 py-3 text-ink placeholder:text-sage-400"
+            />
+          </label>
           <button onClick={saveBasics} disabled={!!busy} className="btn-primary self-start">
             Save basics
           </button>

@@ -192,7 +192,7 @@ export async function extractEntityLinks(transcript: string): Promise<EntityLink
 // responsible for uploading them somewhere durable.
 // ---------------------------------------------------------------------------
 
-const IMAGEN_MODEL = process.env.IMAGEN_MODEL || 'imagen-3.0-generate-002';
+const IMAGEN_MODEL = process.env.IMAGEN_MODEL || 'imagen-4.0-generate-001';
 
 export async function generateImagesImagen(prompt: string, n = 1): Promise<Buffer[]> {
   if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not set');

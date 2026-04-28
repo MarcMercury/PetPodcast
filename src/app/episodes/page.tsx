@@ -1,5 +1,6 @@
 import { createSupabaseServer } from '@/lib/supabase/server';
 import type { AnimalType, Episode } from '@/lib/types';
+import { PLANNED_EPISODES } from '@/lib/planned-episodes';
 import Link from 'next/link';
 
 // Filters depend on searchParams, so keep this dynamic.
@@ -195,6 +196,39 @@ export default async function EpisodesPage({
           <EmptyState filterActive={filterActive} />
         )}
       </section>
+
+      {/* Planned Season 1 slate — listener-facing roadmap of upcoming episodes. */}
+      <section className="mx-auto max-w-6xl px-6 mb-24">
+        <div className="flex items-baseline justify-between gap-4 flex-wrap">
+          <div>
+            <p className="eyebrow">The Slate</p>
+            <h2 className="mt-2 text-2xl md:text-3xl font-display font-bold text-cream">
+              Season 1: 52 planned topics
+            </h2>
+            <p className="mt-2 max-w-2xl text-sage-200">
+              One planned topic a week, plus a second topic pulled at random from
+              listener submissions. Order is not final &mdash; subjects may shift as
+              guests and headlines change.
+            </p>
+          </div>
+          <Link href="/#ask" className="btn-ghost shrink-0">
+            Submit a question
+          </Link>
+        </div>
+        <ol className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3">
+          {PLANNED_EPISODES.map((title, i) => (
+            <li
+              key={i}
+              className="flex gap-3 border-b border-bone/40 pb-2 text-sage-100"
+            >
+              <span className="font-mono text-xs text-sage-400 tabular-nums pt-1 w-8 shrink-0">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span className="leading-snug">{title}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
     </>
   );
 }
@@ -229,7 +263,17 @@ function EmptyState({ filterActive }: { filterActive: boolean }) {
           {filterActive ? (
             <Link href="/episodes" className="btn-primary">Clear filters</Link>
           ) : (
-            <a href="/feed.xml" className="btn-primary">Subscribe via RSS</a>
+            <>
+              <a
+                href="https://open.spotify.com/show/1d2EE3HdRE2LzqdyInWTR0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+              >
+                Listen on Spotify
+              </a>
+              <a href="/feed.xml" className="btn-ghost">Subscribe via RSS</a>
+            </>
           )}
           <Link href="/#ask" className="btn-ghost">Ask a Vet</Link>
         </div>

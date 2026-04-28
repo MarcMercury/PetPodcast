@@ -122,6 +122,14 @@ export default async function HomePage({
           <div className="mt-10 flex flex-col items-center text-center">
             <div className="flex flex-wrap justify-center gap-3">
               <a href="/episodes" className="btn-primary">▶ Listen Now</a>
+              <a
+                href="https://open.spotify.com/show/1d2EE3HdRE2LzqdyInWTR0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost"
+              >
+                Listen on Spotify
+              </a>
               <a href="#ask" className="btn-ghost">Ask a Vet</a>
             </div>
             <div className="mt-8 flex items-center gap-4 text-[10px] text-sage-300/70 font-deck uppercase tracking-deck">

@@ -3,8 +3,11 @@
 
 import type { PodcastIndexFeed } from './podcastindex';
 
+// Petspective on Spotify (show-level link). Stable identifier — does not change per episode.
+export const SPOTIFY_SHOW_URL = 'https://open.spotify.com/show/1d2EE3HdRE2LzqdyInWTR0';
+
 export interface ListenLink {
-  platform: 'apple' | 'overcast' | 'pocketcasts' | 'castro' | 'castbox' | 'podcastindex' | 'rss';
+  platform: 'apple' | 'spotify' | 'overcast' | 'pocketcasts' | 'castro' | 'castbox' | 'podcastindex' | 'rss';
   label: string;
   url: string;
 }
@@ -12,6 +15,12 @@ export interface ListenLink {
 export function buildListenLinks(feed: PodcastIndexFeed): ListenLink[] {
   const links: ListenLink[] = [];
   const itunesId = feed.itunesId;
+
+  links.push({
+    platform: 'spotify',
+    label: 'Spotify',
+    url: SPOTIFY_SHOW_URL
+  });
 
   if (itunesId) {
     links.push({

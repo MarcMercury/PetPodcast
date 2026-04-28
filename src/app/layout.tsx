@@ -94,6 +94,14 @@ function SiteFooter() {
           >
             petpodcast.pet@gmail.com
           </a>
+          <a
+            href="https://instagram.com/petspective.podcast"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sage-200 hover:text-cream underline-offset-4 hover:underline"
+          >
+            @petspective.podcast on Instagram
+          </a>
           <p className="deck-label text-[10px] text-sage-300/70">
             See Your Pet Through a Vet’s Eyes
           </p>

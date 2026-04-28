@@ -138,6 +138,14 @@ export default async function HomePage({
               >
                 Watch on YouTube
               </a>
+              <a
+                href="https://instagram.com/petspective.podcast"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost"
+              >
+                Follow on Instagram
+              </a>
               <a href="#ask" className="btn-ghost">Ask a Vet</a>
             </div>
           </div>

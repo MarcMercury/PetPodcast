@@ -1,6 +1,5 @@
 import { createSupabaseServer } from '@/lib/supabase/server';
 import type { AnimalType, Episode } from '@/lib/types';
-import { PLANNED_EPISODES } from '@/lib/planned-episodes';
 import Link from 'next/link';
 
 // Filters depend on searchParams, so keep this dynamic.
@@ -201,13 +200,6 @@ export default async function EpisodesPage({
 }
 
 function EmptyState({ filterActive }: { filterActive: boolean }) {
-  // Real Season 1 slate, rendered as "coming soon" cards so the page reflects
-  // the actual planned lineup instead of generic placeholders.
-  const slate = PLANNED_EPISODES.map((title, i) => ({
-    number: i + 1,
-    title
-  }));
-
   return (
     <div>
       {/* Status banner */}
@@ -224,10 +216,9 @@ function EmptyState({ filterActive }: { filterActive: boolean }) {
         <p className="mt-3 max-w-2xl text-sage-200">
           {filterActive
             ? 'Once Season 1 ships, your filtered view will live here. In the meantime, clear the filters to see the full upcoming lineup, or send us a question for the show.'
-            : `Petspective is taping Season 1 with practicing veterinarians right now —
-               ${slate.length} planned topics, plus a second topic each week pulled at
-               random from listener submissions. Subscribe via RSS, or drop a question
-               and we may answer it on a future episode.`}
+            : `Petspective is taping Season 1 with practicing veterinarians right now.
+               Subscribe via RSS, or drop a question and we may answer it on a future
+               episode.`}
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           {filterActive ? (
@@ -256,39 +247,6 @@ function EmptyState({ filterActive }: { filterActive: boolean }) {
           <Link href="/#ask" className="btn-ghost">Ask a Vet</Link>
         </div>
       </div>
-
-      {/* Season 1 slate — same card shape as the live feed, marked "Coming Soon". */}
-      {!filterActive && (
-        <div className="mt-10">
-          <div className="flex items-baseline justify-between gap-4 flex-wrap">
-            <p className="eyebrow">The Season 1 slate</p>
-            <p className="text-xs text-sage-400">
-              Order not final &middot; one planned topic + one listener pick per week
-            </p>
-          </div>
-          <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {slate.map((p) => (
-              <div key={p.number} className="card flex flex-col opacity-80">
-                <div className="aspect-square bg-bone/60 relative grid place-items-center">
-                  <div className="absolute inset-0 bg-gradient-to-br from-sage-700/30 to-ink/20" />
-                  <span className="relative text-6xl text-sage-300/70">🩺</span>
-                  <span className="absolute top-3 left-3 chip bg-ink/80 text-sage-200 backdrop-blur">
-                    Coming Soon
-                  </span>
-                </div>
-                <div className="p-5 flex-1 flex flex-col">
-                  <p className="eyebrow text-[10px]">
-                    S1 &middot; Ep {String(p.number).padStart(2, '0')}
-                  </p>
-                  <h3 className="mt-2 font-display font-bold text-lg leading-snug text-cream/90">
-                    {p.title}
-                  </h3>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

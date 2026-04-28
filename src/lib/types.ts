@@ -41,6 +41,12 @@ export interface TranscriptSegment {
   text: string;
 }
 
+export interface TranscriptWord {
+  word: string;
+  start: number;
+  end: number;
+}
+
 export type EntityLinkType =
   | 'condition'
   | 'medication'
@@ -62,6 +68,7 @@ export interface Transcript {
   episode_id: string;
   raw_text: string | null;
   segments: TranscriptSegment[];
+  words: TranscriptWord[];
   language: string | null;
   entity_links: EntityLink[];
 }
@@ -72,4 +79,23 @@ export interface ShowNotes {
   key_takeaways: string[];
   chapters: { start: number; title: string }[];
   seo_description: string | null;
+}
+
+// ----- Studio (recording / editing console) ---------------------
+
+export interface StudioCut { start: number; end: number }
+export interface StudioChapter { time: number; title: string }
+export type AuphonicStatus = 'queued' | 'processing' | 'done' | 'error' | null;
+
+export interface StudioProject {
+  episode_id: string;
+  cuts: StudioCut[];
+  chapters: StudioChapter[];
+  intro_path: string | null;
+  outro_path: string | null;
+  auphonic_uuid: string | null;
+  auphonic_status: AuphonicStatus;
+  polished_audio_path: string | null;
+  final_audio_path: string | null;
+  updated_at: string;
 }

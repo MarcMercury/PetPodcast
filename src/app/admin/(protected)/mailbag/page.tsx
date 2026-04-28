@@ -58,7 +58,9 @@ export default async function MailbagInbox({
         <div>
           <h2 className="text-2xl font-bold">Mailbag</h2>
           <p className="text-sm text-sage-600 mt-1">
-            Listener questions submitted from the homepage form.
+            The Wildcard queue. Listener questions submitted from the homepage form —
+            pulled live on air by the random question generator during the wildcard
+            segment.
           </p>
         </div>
         <div className="flex gap-2">

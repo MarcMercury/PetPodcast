@@ -343,13 +343,53 @@ export default async function HomePage({
         </div>
       </section>
 
+      {/* How the show works — show structure context */}
+      <section className="mx-auto max-w-5xl px-6 mt-24">
+        <p className="eyebrow text-center">How the Show Works</p>
+        <h2 className="mt-2 text-center text-3xl font-display font-bold tracking-tight">
+          Two segments. One planned. One pulled from a hat.
+        </h2>
+        <p className="mx-auto mt-3 max-w-2xl text-center text-sage-200">
+          Every Petspective episode runs the same shape: a deep dive on the night&apos;s
+          planned topic, then a live <strong className="text-cream">Wildcard</strong> round
+          where a random-question generator pulls straight from the listener queue.
+        </p>
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <div className="card p-6 bg-ink border-sage-700">
+            <p className="eyebrow">Segment 1</p>
+            <h3 className="mt-2 text-xl font-display font-bold">The Planned Topic</h3>
+            <p className="mt-2 text-sage-200 text-sm leading-relaxed">
+              A focused, prepped conversation with our vets — nutrition, surgery, dental,
+              behavior, emergency, whatever the week calls for. Researched, sourced, and
+              built around real cases.
+            </p>
+          </div>
+          <div className="card p-6 bg-ink border-sage-700">
+            <p className="eyebrow">Segment 2</p>
+            <h3 className="mt-2 text-xl font-display font-bold">The Wildcard Round</h3>
+            <p className="mt-2 text-sage-200 text-sm leading-relaxed">
+              We hit a random question generator live on air. It pulls one of your
+              submissions out of the queue — on topic, off topic, weirdly specific,
+              wildly general — and the vets answer it cold.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* The Mailbag */}
       <section className="mx-auto max-w-3xl px-6 mt-24" id="ask">
         <div className="card p-8 md:p-10 bg-ink border-sage-700">
-          <p className="eyebrow">The Mailbag</p>
+          <p className="eyebrow">The Mailbag · Wildcard Queue</p>
           <h2 className="mt-2 text-3xl font-display font-bold tracking-tight">Ask a Vet</h2>
-          <p className="text-sage-200 mt-2 max-w-xl">
-            Drop a question. We may answer it on a future Petspective episode.
+          <p className="text-sage-200 mt-3 max-w-xl leading-relaxed">
+            Every question you submit drops into the <strong className="text-cream">Wildcard
+            queue</strong>. During the back half of each episode we run a random question
+            generator live on air — whatever it pulls, the vets answer.
+          </p>
+          <p className="text-sage-200 mt-3 max-w-xl leading-relaxed">
+            That means there&apos;s no &ldquo;wrong&rdquo; question. Ask something general,
+            ask something hyper-specific, ask something completely off topic. If the
+            generator pulls your card, it goes on the show.
           </p>
           <form action="/api/mailbag" method="post" className="mt-6 grid gap-3">
             <input
@@ -363,10 +403,10 @@ export default async function HomePage({
               name="question"
               required
               rows={4}
-              placeholder="What's going on with your pet?"
+              placeholder="Anything goes — on topic, off topic, serious, silly. The generator decides."
               className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 placeholder:text-sage-300/60 focus:outline-none focus:border-sage-400"
             />
-            <button className="btn-primary self-start">Submit Question</button>
+            <button className="btn-primary self-start">Drop It in the Queue</button>
           </form>
           <p className="mt-5 text-xs text-sage-300/80">
             Prefer email? Reach us at{' '}
@@ -376,7 +416,7 @@ export default async function HomePage({
             >
               petpodcast.pet@gmail.com
             </a>
-            .
+            . Same queue either way.
           </p>
         </div>
       </section>

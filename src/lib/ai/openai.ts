@@ -10,19 +10,22 @@ function authHeader() {
 }
 
 export interface WhisperSegment { start: number; end: number; text: string }
+export interface WhisperWord { word: string; start: number; end: number }
 export interface WhisperResult {
   text: string;
   language: string;
   segments: WhisperSegment[];
+  words: WhisperWord[];
 }
 
-/** Transcribe audio via Whisper. Returns timestamped segments. */
+/** Transcribe audio via Whisper. Returns segment + word-level timestamps. */
 export async function transcribeAudio(audio: Blob, filename = 'episode.mp3'): Promise<WhisperResult> {
   const form = new FormData();
   form.append('file', audio, filename);
   form.append('model', 'whisper-1');
   form.append('response_format', 'verbose_json');
   form.append('timestamp_granularities[]', 'segment');
+  form.append('timestamp_granularities[]', 'word');
 
   const res = await fetch(`${BASE}/audio/transcriptions`, {
     method: 'POST',
@@ -34,7 +37,8 @@ export async function transcribeAudio(audio: Blob, filename = 'episode.mp3'): Pr
   return {
     text: json.text,
     language: json.language,
-    segments: (json.segments ?? []).map((s: any) => ({ start: s.start, end: s.end, text: s.text }))
+    segments: (json.segments ?? []).map((s: any) => ({ start: s.start, end: s.end, text: s.text })),
+    words: (json.words ?? []).map((w: any) => ({ word: w.word, start: w.start, end: w.end }))
   };
 }
 

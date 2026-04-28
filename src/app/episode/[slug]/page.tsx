@@ -156,6 +156,26 @@ export default async function EpisodePage({ params }: { params: { slug: string }
           )}
         </section>
       )}
+
+      {/* Show structure footer — explain the wildcard segment to single-episode visitors */}
+      <aside className="mt-16 rounded-2xl border border-sage-700 bg-ink/60 p-6">
+        <p className="eyebrow">About the Format</p>
+        <h3 className="mt-2 text-lg font-display font-bold">Planned topic, then Wildcard</h3>
+        <p className="mt-2 text-sage-200 text-sm leading-relaxed">
+          Every Petspective episode opens with a planned, researched topic and closes with
+          a <strong className="text-cream">Wildcard round</strong> — we run a random
+          question generator live on air against the listener mailbag. Anything in the
+          queue can come up: on topic, off topic, general, hyper-specific.
+        </p>
+        <p className="mt-3 text-sm">
+          <a
+            href="/#ask"
+            className="text-cream underline underline-offset-4 hover:text-sage-200"
+          >
+            Drop a question in the Wildcard queue →
+          </a>
+        </p>
+      </aside>
     </article>
   );
 }

@@ -35,10 +35,15 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
         episode_id: params.id,
         raw_text: result.text,
         segments: result.segments,
+        words: result.words,
         language: result.language
       }, { onConflict: 'episode_id' });
 
-    return NextResponse.json({ text: result.text, segments: result.segments.length });
+    return NextResponse.json({
+      text: result.text,
+      segments: result.segments.length,
+      words: result.words.length
+    });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

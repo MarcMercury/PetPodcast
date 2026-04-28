@@ -65,7 +65,14 @@ function SiteHeader() {
           <a href="/#vets" className="hover:text-sage-300 transition">The Pack</a>
           <a href="/recalls" className="hover:text-sage-300 transition">Recalls</a>
           <a href="/#ask" className="hover:text-sage-300 transition">Ask a Vet</a>
-          <a href="/admin" className="btn-ghost text-xs py-1.5">Studio</a>
+          <a href="/#subscribe" className="hover:text-sage-300 transition">Subscribe</a>
+          <a
+            href="/admin"
+            className="btn-ghost text-xs py-1.5"
+            title="Creators only — sign-in required"
+          >
+            Studio
+          </a>
         </nav>
       </div>
     </header>

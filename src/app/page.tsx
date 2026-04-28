@@ -37,7 +37,7 @@ function buildHref(params: { animal?: string; topic?: string }) {
 export default async function HomePage({
   searchParams
 }: {
-  searchParams?: { animal?: string; topic?: string };
+  searchParams?: { animal?: string; topic?: string; subscribed?: string };
 }) {
   const supabase = createSupabaseServer();
 
@@ -369,6 +369,63 @@ export default async function HomePage({
               wildly general — and the vets answer it cold.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Subscribe — listener email opt-in for new episode drops */}
+      <section className="mx-auto max-w-3xl px-6 mt-24" id="subscribe">
+        <div className="card p-8 md:p-10 bg-ink border-sage-700">
+          <p className="eyebrow">The Drop List</p>
+          <h2 className="mt-2 text-3xl font-display font-bold tracking-tight">
+            Get a heads-up when a new episode drops.
+          </h2>
+          <p className="text-sage-200 mt-3 max-w-xl leading-relaxed">
+            One email per episode. No marketing, no roundups, no sponsor promos —
+            just the new episode link the day it goes live. Unsubscribe anytime.
+          </p>
+          {searchParams?.subscribed === '1' && (
+            <p className="mt-4 rounded-lg bg-sage-700/30 text-sage-100 px-3 py-2 text-sm">
+              You&apos;re on the list. We&apos;ll only email when a new episode drops.
+            </p>
+          )}
+          {searchParams?.subscribed === 'invalid' && (
+            <p className="mt-4 rounded-lg bg-red-900/40 text-red-200 px-3 py-2 text-sm">
+              That doesn&apos;t look like a valid email — try again?
+            </p>
+          )}
+          {searchParams?.subscribed === 'error' && (
+            <p className="mt-4 rounded-lg bg-red-900/40 text-red-200 px-3 py-2 text-sm">
+              Something went sideways saving that. Try again in a minute.
+            </p>
+          )}
+          <form action="/api/subscribe" method="post" className="mt-6 flex flex-col sm:flex-row gap-3">
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="you@example.com"
+              autoComplete="email"
+              className="flex-1 rounded-xl border border-white/15 bg-white/5 px-4 py-3 placeholder:text-sage-300/60 focus:outline-none focus:border-sage-400"
+            />
+            <input type="hidden" name="source" value="home" />
+            <button className="btn-primary self-start sm:self-auto">Subscribe</button>
+          </form>
+          <p className="text-sage-300/70 mt-3 text-xs leading-relaxed">
+            Prefer a podcast app?{' '}
+            <a href="/feed.xml" className="underline-offset-4 hover:underline text-sage-200">
+              Subscribe via RSS
+            </a>{' '}
+            or on{' '}
+            <a
+              href="https://open.spotify.com/show/1d2EE3HdRE2LzqdyInWTR0"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline-offset-4 hover:underline text-sage-200"
+            >
+              Spotify
+            </a>
+            .
+          </p>
         </div>
       </section>
 

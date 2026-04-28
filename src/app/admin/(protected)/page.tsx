@@ -3,21 +3,18 @@ import Link from 'next/link';
 
 export default async function AdminHome() {
   const supabase = supabaseAdmin;
-  const { count: total } = await supabase
-    .from('episodes')
-    .select('id', { count: 'exact', head: true });
-  const { count: published } = await supabase
-    .from('episodes')
-    .select('id', { count: 'exact', head: true })
-    .eq('status', 'published');
-  const { count: drafts } = await supabase
-    .from('episodes')
-    .select('id', { count: 'exact', head: true })
-    .eq('status', 'draft');
-  const { count: openMailbag } = await supabase
-    .from('mailbag')
-    .select('id', { count: 'exact', head: true })
-    .eq('is_answered', false);
+  // Run the four count queries in parallel — they're independent.
+  const [
+    { count: total },
+    { count: published },
+    { count: drafts },
+    { count: openMailbag }
+  ] = await Promise.all([
+    supabase.from('episodes').select('id', { count: 'exact', head: true }),
+    supabase.from('episodes').select('id', { count: 'exact', head: true }).eq('status', 'published'),
+    supabase.from('episodes').select('id', { count: 'exact', head: true }).eq('status', 'draft'),
+    supabase.from('mailbag').select('id', { count: 'exact', head: true }).eq('is_answered', false)
+  ]);
 
   const stats = [
     { label: 'Total Episodes', value: total ?? 0 },

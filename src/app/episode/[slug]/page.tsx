@@ -1,5 +1,6 @@
 import { createSupabaseServer } from '@/lib/supabase/server';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 import type { Episode, ShowNotes, Transcript, Vet } from '@/lib/types';
 import type { Metadata } from 'next';
 import TranscriptPlayer from './transcript-player';
@@ -9,21 +10,27 @@ import { buildListenLinks } from '@/lib/listen-links';
 
 export const revalidate = 60;
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+// React.cache dedupes within a single request \u2014 generateMetadata and the page
+// component both call this, but we only hit Supabase once.
+const getEpisodeBySlug = cache(async (slug: string) => {
   const supabase = createSupabaseServer();
   const { data } = await supabase
     .from('episodes')
-    .select('title,description,image_url')
-    .eq('slug', params.slug)
+    .select('*')
+    .eq('slug', slug)
     .eq('status', 'published')
     .maybeSingle();
-  if (!data) return { title: 'Petspective' };
-  const ep = data as Pick<Episode, 'title' | 'description' | 'image_url'>;
+  return (data as Episode | null) ?? null;
+});
+
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const ep = await getEpisodeBySlug(params.slug);
+  if (!ep) return { title: 'Petspective' };
   return {
-    title: `${ep.title} — Petspective`,
-    description: ep.description ?? 'See Your Pet Through a Vet’s Eyes.',
+    title: `${ep.title} \u2014 Petspective`,
+    description: ep.description ?? 'See Your Pet Through a Vet\u2019s Eyes.',
     openGraph: {
-      title: `${ep.title} — Petspective`,
+      title: `${ep.title} \u2014 Petspective`,
       description: ep.description ?? '',
       images: ep.image_url ? [{ url: ep.image_url }] : undefined,
       siteName: 'Petspective',
@@ -35,15 +42,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function EpisodePage({ params }: { params: { slug: string } }) {
   const supabase = createSupabaseServer();
 
-  const { data: episode } = await supabase
-    .from('episodes')
-    .select('*')
-    .eq('slug', params.slug)
-    .eq('status', 'published')
-    .single();
-
+  const episode = await getEpisodeBySlug(params.slug);
   if (!episode) notFound();
-  const ep = episode as Episode;
+  const ep = episode;
 
   const [{ data: transcript }, { data: notes }, { data: vet }] = await Promise.all([
     supabase.from('transcripts').select('*').eq('episode_id', ep.id).maybeSingle(),

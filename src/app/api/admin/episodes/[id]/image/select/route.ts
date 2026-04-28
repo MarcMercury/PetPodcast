@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { requireCreator } from '@/lib/auth';
 import { BUCKETS, assertPetBucket } from '@/lib/isolation';
@@ -39,6 +40,12 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     });
 
     await supabaseAdmin.from('episodes').update({ image_url: publicUrl }).eq('id', params.id);
+
+    const { data: ep } = await supabaseAdmin
+      .from('episodes').select('slug').eq('id', params.id).maybeSingle();
+    revalidatePath('/');
+    revalidatePath('/episodes');
+    if (ep?.slug) revalidatePath(`/episode/${ep.slug}`);
 
     return NextResponse.json({ image_url: publicUrl });
   } catch (e: any) {

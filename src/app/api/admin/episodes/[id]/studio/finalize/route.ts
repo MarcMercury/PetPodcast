@@ -2,6 +2,7 @@
 // resulting MP3 directly to Supabase storage. This route records the path on
 // the studio project and (optionally) promotes it to the episode's audio_url.
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { requireCreator } from '@/lib/auth';
 import { BUCKETS, assertPetBucket } from '@/lib/isolation';
@@ -31,6 +32,13 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       .from(AUDIO_BUCKET).createSignedUrl(path, 60 * 60 * 24 * 365);
     audio_url = signed?.signedUrl ?? null;
     await supabaseAdmin.from('episodes').update({ audio_url }).eq('id', params.id);
+
+    const { data: ep } = await supabaseAdmin
+      .from('episodes').select('slug').eq('id', params.id).maybeSingle();
+    revalidatePath('/');
+    revalidatePath('/episodes');
+    revalidatePath('/feed.xml');
+    if (ep?.slug) revalidatePath(`/episode/${ep.slug}`);
   }
 
   return NextResponse.json({ ok: true, audio_url });

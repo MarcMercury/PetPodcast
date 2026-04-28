@@ -140,13 +140,6 @@ export default async function HomePage({
               </a>
               <a href="#ask" className="btn-ghost">Ask a Vet</a>
             </div>
-            <div className="mt-8 flex items-center gap-4 text-[10px] text-sage-300/70 font-deck uppercase tracking-deck">
-              <span>Vol. 01</span>
-              <span aria-hidden>·</span>
-              <span>Clinical Media</span>
-              <span aria-hidden>·</span>
-              <span>podcast.pet</span>
-            </div>
           </div>
         </div>
         <div
@@ -328,12 +321,7 @@ export default async function HomePage({
 
       {/* The Pack */}
       <section className="mx-auto max-w-6xl px-6 mt-24" id="vets">
-        <p className="eyebrow">The Pack</p>
-        <h2 className="mt-2 text-3xl font-display font-bold tracking-tight">Meet the Vets</h2>
-        <p className="mt-2 text-sage-200 max-w-2xl">
-          Practicing veterinarians &mdash; the voices behind every Petspective
-          episode.
-        </p>
+        <h2 className="text-3xl font-display font-bold tracking-tight">Meet the Pack</h2>
         <div className="mt-8 grid sm:grid-cols-2 md:grid-cols-4 gap-6">
           {(vets ?? []).map((v: Vet) => (
             <div key={v.id} className="card p-6 text-center">

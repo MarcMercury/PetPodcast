@@ -3,10 +3,12 @@ import Link from 'next/link';
 
 export default async function EpisodesAdminList() {
   const supabase = supabaseAdmin;
+  // Cap the admin list. If we ever exceed this we'll add real pagination.
   const { data: episodes } = await supabase
     .from('episodes')
     .select('id, slug, title, status, published_at, created_at')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(200);
 
   return (
     <div>
@@ -27,7 +29,11 @@ export default async function EpisodesAdminList() {
           <tbody>
             {(episodes ?? []).map((e) => (
               <tr key={e.id} className="border-t border-sage-100">
-                <td className="px-4 py-3 font-medium">{e.title}</td>
+                <td className="px-4 py-3 font-medium">
+                  <Link href={`/admin/episodes/${e.id}`} className="hover:underline">
+                    {e.title}
+                  </Link>
+                </td>
                 <td className="px-4 py-3">
                   <span className="rounded-full bg-sage-100 px-2 py-0.5 text-xs">
                     {e.status}

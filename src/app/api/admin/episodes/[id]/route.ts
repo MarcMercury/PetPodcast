@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { requireCreator } from '@/lib/auth';
 import { BUCKETS, assertPetBucket } from '@/lib/isolation';
@@ -25,7 +26,14 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     if (body.status === 'published') updates.published_at = new Date().toISOString();
   }
   if (body.title) updates.title = body.title;
-  if (body.description) updates.description = body.description;
+  if (body.description !== undefined) updates.description = body.description || null;
+  if (body.season !== undefined) {
+    updates.season = body.season === null || body.season === '' ? null : Number(body.season);
+  }
+  if (body.episode_number !== undefined) {
+    updates.episode_number =
+      body.episode_number === null || body.episode_number === '' ? null : Number(body.episode_number);
+  }
   if (body.spotify_url !== undefined) updates.spotify_url = body.spotify_url || null;
   if (body.breed_species !== undefined) {
     const s = body.breed_species;
@@ -40,5 +48,36 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     .from('episodes').update(updates).eq('id', params.id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Bust any Next data cache so the listener feed reflects edits immediately.
+  const { data: ep } = await supabaseAdmin
+    .from('episodes').select('slug').eq('id', params.id).maybeSingle();
+  revalidatePath('/');
+  revalidatePath('/episodes');
+  revalidatePath('/feed.xml');
+  if (ep?.slug) revalidatePath(`/episode/${ep.slug}`);
+
   return NextResponse.json({ ok: true, audio_url: updates.audio_url });
+}
+
+export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+  const auth = await requireCreator();
+  if ('error' in auth) return auth.error;
+
+  const { data: ep } = await supabaseAdmin
+    .from('episodes').select('slug').eq('id', params.id).maybeSingle();
+
+  const { error } = await supabaseAdmin
+    .from('episodes')
+    .delete()
+    .eq('id', params.id);
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  revalidatePath('/');
+  revalidatePath('/episodes');
+  revalidatePath('/feed.xml');
+  if (ep?.slug) revalidatePath(`/episode/${ep.slug}`);
+
+  return NextResponse.json({ ok: true });
 }

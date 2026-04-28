@@ -155,14 +155,18 @@ export default function NewEpisodePage() {
   };
 
   // ---------- Step 4: image studio ----------
-  const generateImages = async () => {
+  const generateImages = async (mode: 'auto' | 'subject' = 'auto') => {
     setBusy('Generating image options…');
     setErr(null);
     try {
+      const payload =
+        mode === 'auto'
+          ? { auto: true, count: 4 }
+          : { subject: imagePrompt, count: 4 };
       const res = await fetch(`/api/admin/episodes/${episodeId}/image`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: imagePrompt, count: 4 })
+        body: JSON.stringify(payload)
       });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error);
@@ -402,16 +406,40 @@ export default function NewEpisodePage() {
         {step === 4 && (
           <div className="grid gap-4">
             <h2 className="text-xl font-bold">Step 4 · Image Studio</h2>
-            <textarea
-              value={imagePrompt}
-              onChange={(e) => setImagePrompt(e.target.value)}
-              rows={3}
-              className="rounded-xl border border-sage-200 px-4 py-3"
-              placeholder="Visual prompt for the episode art"
-            />
-            <button onClick={generateImages} disabled={!imagePrompt || !!busy} className="btn-primary self-start">
-              ✨ Generate 4 Options
-            </button>
+            <p className="text-xs text-sage-500 max-w-xl">
+              Covers always render in the Petspective house style (sage / cream / ink, no faces,
+              no text). Click generate — the title and show notes drive the subject.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => generateImages('auto')}
+                disabled={!!busy}
+                className="btn-primary self-start"
+              >
+                ✨ Generate 4 covers from episode
+              </button>
+            </div>
+            <details>
+              <summary className="cursor-pointer text-sm text-sage-700">
+                Or describe a custom subject
+              </summary>
+              <div className="mt-3 grid gap-3">
+                <textarea
+                  value={imagePrompt}
+                  onChange={(e) => setImagePrompt(e.target.value)}
+                  rows={3}
+                  className="rounded-xl border border-sage-200 px-4 py-3"
+                  placeholder='Subject only — e.g. "a calm golden retriever in a sage-toned waiting room"'
+                />
+                <button
+                  onClick={() => generateImages('subject')}
+                  disabled={!imagePrompt.trim() || !!busy}
+                  className="rounded-lg border border-sage-300 px-3 py-2 text-sm self-start disabled:opacity-50 hover:bg-sage-50"
+                >
+                  Generate from custom subject
+                </button>
+              </div>
+            </details>
             {imageOptions.length > 0 && (
               <div className="grid grid-cols-2 gap-3">
                 {imageOptions.map((u) => (

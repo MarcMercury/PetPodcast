@@ -146,16 +146,27 @@ export async function getBreedBySlug(species: Species, slug: string): Promise<Br
   return all.find((b) => b.slug === slug) ?? null;
 }
 
-// Deterministic "breed of the week" — same for everyone for a given ISO week,
-// rotates Monday 00:00 UTC. Alternates dog / cat by week parity.
-export async function getBreedOfTheWeek(): Promise<Breed | null> {
-  const now = new Date();
-  // ISO week number (rough; good enough for rotation)
-  const start = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
-  const diffDays = Math.floor((now.getTime() - start.getTime()) / 86400000);
-  const week = Math.floor(diffDays / 7);
-  const species: Species = week % 2 === 0 ? 'dog' : 'cat';
+// Deterministic "breeds of the week" — one dog + one cat, same for everyone,
+// rotating every Sunday evening (23:00 UTC ≈ 6–7pm US Eastern). The epoch is a
+// known Sunday at 23:00 UTC; the week index advances at that boundary.
+const ROTATION_EPOCH_MS = Date.UTC(2024, 0, 7, 23, 0, 0); // Sun 2024-01-07 23:00 UTC
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+export function getRotationWeekIndex(now: Date = new Date()): number {
+  return Math.floor((now.getTime() - ROTATION_EPOCH_MS) / WEEK_MS);
+}
+
+export async function getBreedOfTheWeek(species: Species): Promise<Breed | null> {
   const all = await getAllBreeds(species);
   if (all.length === 0) return null;
-  return all[week % all.length];
+  const week = getRotationWeekIndex();
+  // Offset cat index so dog and cat don't cycle in lockstep.
+  const offset = species === 'cat' ? Math.floor(all.length / 3) : 0;
+  const idx = ((week + offset) % all.length + all.length) % all.length;
+  return all[idx];
+}
+
+export async function getBreedsOfTheWeek(): Promise<{ dog: Breed | null; cat: Breed | null }> {
+  const [dog, cat] = await Promise.all([getBreedOfTheWeek('dog'), getBreedOfTheWeek('cat')]);
+  return { dog, cat };
 }

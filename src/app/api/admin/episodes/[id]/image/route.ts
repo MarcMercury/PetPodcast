@@ -2,9 +2,43 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { requireCreator } from '@/lib/auth';
 import { generateImages } from '@/lib/ai/openai';
+import { generateImagesImagen } from '@/lib/ai/gemini';
+import { BUCKETS, assertPetBucket } from '@/lib/isolation';
 import { buildCoverPrompt, isWrappedCoverPrompt } from '@/lib/ai/cover-style';
 
 export const maxDuration = 120;
+
+const IMG_BUCKET = process.env.SUPABASE_BUCKET_IMAGES || BUCKETS.images;
+assertPetBucket(IMG_BUCKET);
+
+/** Indicates DALL-E is unusable for billing/quota reasons — fall back to Imagen. */
+function isOpenAIQuotaError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return /billing_hard_limit_reached|insufficient_quota|exceeded your current quota|rate_limit_exceeded|billing/i.test(
+    msg
+  );
+}
+
+/** Generate cover previews via Imagen, upload to images bucket, return public URLs. */
+async function generateViaImagen(
+  prompt: string,
+  count: number,
+  episodeId: string
+): Promise<string[]> {
+  const buffers = await generateImagesImagen(prompt, count);
+  const ts = Date.now();
+  const urls: string[] = [];
+  for (let i = 0; i < buffers.length; i++) {
+    const path = `previews/${episodeId}/imagen-${ts}-${i}.png`;
+    const { error: upErr } = await supabaseAdmin.storage
+      .from(IMG_BUCKET)
+      .upload(path, buffers[i], { contentType: 'image/png', upsert: true });
+    if (upErr) throw upErr;
+    const { data: pub } = supabaseAdmin.storage.from(IMG_BUCKET).getPublicUrl(path);
+    urls.push(pub.publicUrl);
+  }
+  return urls;
+}
 
 // POST /api/admin/episodes/:id/image
 //
@@ -76,7 +110,16 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       );
     }
 
-    const urls = await generateImages(finalPrompt as string, count);
+    let urls: string[];
+    let provider: 'dalle' | 'imagen' = 'dalle';
+    try {
+      urls = await generateImages(finalPrompt as string, count);
+    } catch (err) {
+      if (!isOpenAIQuotaError(err)) throw err;
+      // OpenAI is out of credits — fall back to Imagen so the studio keeps working.
+      provider = 'imagen';
+      urls = await generateViaImagen(finalPrompt as string, count, params.id);
+    }
 
     await supabaseAdmin.from('assets').insert(
       urls.map((u) => ({
@@ -88,7 +131,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       }))
     );
 
-    return NextResponse.json({ urls, prompt: finalPrompt, subject: logSubject });
+    return NextResponse.json({ urls, prompt: finalPrompt, subject: logSubject, provider });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

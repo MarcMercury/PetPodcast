@@ -185,3 +185,38 @@ export async function extractEntityLinks(transcript: string): Promise<EntityLink
   }
   return out;
 }
+
+// ---------------------------------------------------------------------------
+// Imagen — fallback cover-art generator used when DALL-E is unavailable
+// (e.g. OpenAI billing hard-limit). Returns raw PNG buffers; the caller is
+// responsible for uploading them somewhere durable.
+// ---------------------------------------------------------------------------
+
+const IMAGEN_MODEL = process.env.IMAGEN_MODEL || 'imagen-3.0-generate-002';
+
+export async function generateImagesImagen(prompt: string, n = 1): Promise<Buffer[]> {
+  if (!GEMINI_API_KEY) throw new Error('GEMINI_API_KEY not set');
+  const sampleCount = Math.min(Math.max(n, 1), 4);
+
+  const res = await fetch(
+    `${BASE}/models/${IMAGEN_MODEL}:predict?key=${GEMINI_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        instances: [{ prompt }],
+        parameters: { sampleCount, aspectRatio: '1:1' }
+      })
+    }
+  );
+
+  if (!res.ok) throw new Error(`Imagen failed: ${res.status} ${await res.text()}`);
+  const json = await res.json();
+  const preds: Array<{ bytesBase64Encoded?: string }> = json.predictions ?? [];
+  const buffers: Buffer[] = [];
+  for (const p of preds) {
+    if (p?.bytesBase64Encoded) buffers.push(Buffer.from(p.bytesBase64Encoded, 'base64'));
+  }
+  if (!buffers.length) throw new Error('Imagen returned no images');
+  return buffers;
+}

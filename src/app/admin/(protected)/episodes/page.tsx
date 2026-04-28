@@ -30,7 +30,7 @@ export default async function EpisodesAdminList() {
             {(episodes ?? []).map((e) => (
               <tr key={e.id} className="border-t border-sage-100">
                 <td className="px-4 py-3 font-medium">
-                  <Link href={`/admin/episodes/${e.id}`} className="hover:underline">
+                  <Link href={`/admin/episodes/${e.id}/studio`} className="hover:underline">
                     {e.title}
                   </Link>
                 </td>
@@ -43,11 +43,8 @@ export default async function EpisodesAdminList() {
                   {e.published_at ? new Date(e.published_at).toLocaleDateString() : '—'}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link href={`/admin/episodes/${e.id}/studio`} className="mr-4 text-sage-700 hover:underline">
-                    Studio →
-                  </Link>
-                  <Link href={`/admin/episodes/${e.id}`} className="text-sage-700 hover:underline">
-                    Edit →
+                  <Link href={`/admin/episodes/${e.id}/studio`} className="text-sage-700 hover:underline">
+                    Open Studio →
                   </Link>
                 </td>
               </tr>

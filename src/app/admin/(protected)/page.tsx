@@ -137,13 +137,7 @@ function EpisodeColumn({
                     href={`/admin/episodes/${r.id}/studio`}
                     className="text-sage-700 hover:underline"
                   >
-                    Studio
-                  </Link>
-                  <Link
-                    href={`/admin/episodes/${r.id}`}
-                    className="text-sage-700 hover:underline"
-                  >
-                    Edit
+                    Open Studio →
                   </Link>
                 </div>
               </div>

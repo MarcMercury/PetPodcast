@@ -80,6 +80,60 @@ export default function StudioClient({
     initial?.project.auphonic_status ?? null
   );
 
+  // Wildcard / Mailbag random question generator -------------------
+  type MailbagPick = {
+    id: string;
+    question: string;
+    user_email: string | null;
+    category: string | null;
+    is_answered: boolean | null;
+    created_at: string;
+  };
+  const [wildcard, setWildcard] = useState<MailbagPick | null>(null);
+  const [wildcardBusy, setWildcardBusy] = useState(false);
+  const [wildcardErr, setWildcardErr] = useState<string | null>(null);
+  const [wildcardOnlyOpen, setWildcardOnlyOpen] = useState(true);
+  const [wildcardSeen, setWildcardSeen] = useState<string[]>([]);
+  const [wildcardTotal, setWildcardTotal] = useState<number | null>(null);
+
+  const generateWildcard = async () => {
+    setWildcardBusy(true);
+    setWildcardErr(null);
+    try {
+      const params = new URLSearchParams();
+      if (wildcardOnlyOpen) params.set('open', '1');
+      if (wildcardSeen.length) params.set('exclude', wildcardSeen.join(','));
+      const res = await fetch(`/api/admin/mailbag/random?${params}`, { cache: 'no-store' });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || 'failed');
+      if (!j.entry) {
+        // Exhausted — reset the seen list and try once more.
+        if (wildcardSeen.length > 0) {
+          setWildcardSeen([]);
+          const res2 = await fetch(
+            `/api/admin/mailbag/random?${wildcardOnlyOpen ? 'open=1' : ''}`,
+            { cache: 'no-store' }
+          );
+          const j2 = await res2.json();
+          setWildcard(j2.entry ?? null);
+          setWildcardTotal(j2.total ?? 0);
+          if (j2.entry) setWildcardSeen([j2.entry.id]);
+          return;
+        }
+        setWildcard(null);
+        setWildcardTotal(0);
+        return;
+      }
+      setWildcard(j.entry);
+      setWildcardTotal(j.total ?? null);
+      setWildcardSeen((s) => [...s, j.entry.id]);
+    } catch (e: any) {
+      setWildcardErr(e.message || 'failed');
+    } finally {
+      setWildcardBusy(false);
+    }
+  };
+
   const wsRef = useRef<any>(null);
   const regionsRef = useRef<any>(null);
 
@@ -530,6 +584,78 @@ export default function StudioClient({
             {err && <p className="text-red-700">✕ {err}</p>}
           </div>
         )}
+
+        <div className="card p-4">
+          <div className="flex items-center justify-between gap-2">
+            <h4 className="font-display font-semibold">Wildcard question</h4>
+            {wildcardTotal !== null && (
+              <span className="text-[11px] text-sage-500">
+                pool: {wildcardTotal}
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-xs text-sage-500">
+            Random pick from listener mailbag &amp; Ask-a-Vet submissions. Hit
+            generate again to draw another.
+          </p>
+          <label className="mt-2 flex items-center gap-2 text-xs text-sage-600">
+            <input
+              type="checkbox"
+              checked={wildcardOnlyOpen}
+              onChange={(e) => {
+                setWildcardOnlyOpen(e.target.checked);
+                setWildcardSeen([]);
+              }}
+            />
+            Unanswered only
+          </label>
+          <button
+            type="button"
+            onClick={generateWildcard}
+            disabled={wildcardBusy}
+            className="btn-primary mt-3 w-full text-sm disabled:opacity-50"
+          >
+            {wildcardBusy ? 'Picking…' : 'Generate question'}
+          </button>
+          {wildcardErr && (
+            <p className="mt-2 text-xs text-red-700">✕ {wildcardErr}</p>
+          )}
+          {wildcard ? (
+            <div className="mt-3 rounded-md border border-sage-200 bg-sage-50 p-3">
+              <div className="flex items-center gap-2 text-[11px] text-sage-600">
+                <span className="font-mono">
+                  {new Date(wildcard.created_at).toLocaleDateString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </span>
+                {wildcard.category && (
+                  <>
+                    <span>·</span>
+                    <span className="uppercase tracking-wide">{wildcard.category}</span>
+                  </>
+                )}
+                {wildcard.is_answered ? (
+                  <span className="ml-auto rounded-full bg-sage-100 text-sage-800 px-2 py-0.5 text-[10px] font-semibold">
+                    ANSWERED
+                  </span>
+                ) : (
+                  <span className="ml-auto rounded-full bg-amber-100 text-amber-800 px-2 py-0.5 text-[10px] font-semibold">
+                    OPEN
+                  </span>
+                )}
+              </div>
+              <p className="mt-2 whitespace-pre-line text-sm text-sage-900">
+                {wildcard.question}
+              </p>
+            </div>
+          ) : wildcardTotal === 0 ? (
+            <p className="mt-3 text-xs text-sage-500">
+              No questions match. Try toggling "Unanswered only".
+            </p>
+          ) : null}
+        </div>
 
         <div className="card p-4">
           <h4 className="font-display font-semibold">Chapters</h4>

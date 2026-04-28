@@ -242,6 +242,14 @@ function EmptyState({ filterActive }: { filterActive: boolean }) {
               >
                 Listen on Spotify
               </a>
+              <a
+                href="https://www.youtube.com/@PetPetspective"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost"
+              >
+                Watch on YouTube
+              </a>
               <a href="/feed.xml" className="btn-ghost">Subscribe via RSS</a>
             </>
           )}

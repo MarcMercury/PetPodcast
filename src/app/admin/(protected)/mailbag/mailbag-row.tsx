@@ -52,17 +52,6 @@ export function MailbagRow({ entry }: { entry: MailbagEntry }) {
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-xs text-sage-600">
             <span className="font-mono">{date}</span>
-            {entry.user_email && (
-              <>
-                <span>·</span>
-                <a
-                  href={`mailto:${entry.user_email}`}
-                  className="underline hover:text-sage-800 truncate max-w-[280px]"
-                >
-                  {entry.user_email}
-                </a>
-              </>
-            )}
             {entry.category && (
               <>
                 <span>·</span>
@@ -93,14 +82,6 @@ export function MailbagRow({ entry }: { entry: MailbagEntry }) {
         >
           {entry.is_answered ? 'Mark open' : 'Mark answered'}
         </button>
-        {entry.user_email && (
-          <a
-            href={`mailto:${entry.user_email}?subject=Re%3A%20your%20Petspective%20question`}
-            className="rounded-lg border border-sage-200 px-3 py-1.5 text-sm hover:bg-sage-50"
-          >
-            Reply by email
-          </a>
-        )}
         <button
           onClick={() => {
             if (confirm('Delete this mailbag entry? This cannot be undone.')) call('DELETE');

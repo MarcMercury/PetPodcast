@@ -2,21 +2,22 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 
 // Public endpoint — accepts mailbag submissions from the homepage form.
+// Submissions are one-way: questions feed the on-air Wildcard generator.
+// We don't collect email and don't reply individually.
 export async function POST(req: Request) {
   const ct = req.headers.get('content-type') || '';
-  let email = '', question = '';
+  let question = '';
 
   if (ct.includes('application/json')) {
     const j = await req.json();
-    email = j.email; question = j.question;
+    question = j.question;
   } else {
     const f = await req.formData();
-    email = String(f.get('email') ?? '');
     question = String(f.get('question') ?? '');
   }
 
-  if (!email || !question) {
-    return NextResponse.json({ error: 'email and question required' }, { status: 400 });
+  if (!question) {
+    return NextResponse.json({ error: 'question required' }, { status: 400 });
   }
   if (question.length > 2000) {
     return NextResponse.json({ error: 'question too long' }, { status: 400 });
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
 
   const { error } = await supabaseAdmin
     .from('mailbag')
-    .insert({ user_email: email, question });
+    .insert({ question });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

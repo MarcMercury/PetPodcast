@@ -130,6 +130,14 @@ export default async function HomePage({
               >
                 Listen on Spotify
               </a>
+              <a
+                href="https://www.youtube.com/@PetPetspective"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-ghost"
+              >
+                Watch on YouTube
+              </a>
               <a href="#ask" className="btn-ghost">Ask a Vet</a>
             </div>
             <div className="mt-8 flex items-center gap-4 text-[10px] text-sage-300/70 font-deck uppercase tracking-deck">
@@ -391,14 +399,11 @@ export default async function HomePage({
             ask something hyper-specific, ask something completely off topic. If the
             generator pulls your card, it goes on the show.
           </p>
+          <p className="text-sage-300/80 mt-3 max-w-xl text-sm leading-relaxed">
+            Heads up: submissions are one-way. We don&apos;t reply to questions
+            individually &mdash; the only response is on air, if the generator pulls your card.
+          </p>
           <form action="/api/mailbag" method="post" className="mt-6 grid gap-3">
-            <input
-              name="email"
-              type="email"
-              required
-              placeholder="your@email.com"
-              className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 placeholder:text-sage-300/60 focus:outline-none focus:border-sage-400"
-            />
             <textarea
               name="question"
               required
@@ -408,16 +413,6 @@ export default async function HomePage({
             />
             <button className="btn-primary self-start">Drop It in the Queue</button>
           </form>
-          <p className="mt-5 text-xs text-sage-300/80">
-            Prefer email? Reach us at{' '}
-            <a
-              href="mailto:petpodcast.pet@gmail.com"
-              className="text-cream underline underline-offset-4 hover:text-sage-200"
-            >
-              petpodcast.pet@gmail.com
-            </a>
-            . Same queue either way.
-          </p>
         </div>
       </section>
     </>

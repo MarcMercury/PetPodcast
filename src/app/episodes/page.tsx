@@ -196,50 +196,17 @@ export default async function EpisodesPage({
           <EmptyState filterActive={filterActive} />
         )}
       </section>
-
-      {/* Planned Season 1 slate — listener-facing roadmap of upcoming episodes. */}
-      <section className="mx-auto max-w-6xl px-6 mb-24">
-        <div className="flex items-baseline justify-between gap-4 flex-wrap">
-          <div>
-            <p className="eyebrow">The Slate</p>
-            <h2 className="mt-2 text-2xl md:text-3xl font-display font-bold text-cream">
-              Season 1: 52 planned topics
-            </h2>
-            <p className="mt-2 max-w-2xl text-sage-200">
-              One planned topic a week, plus a second topic pulled at random from
-              listener submissions. Order is not final &mdash; subjects may shift as
-              guests and headlines change.
-            </p>
-          </div>
-          <Link href="/#ask" className="btn-ghost shrink-0">
-            Submit a question
-          </Link>
-        </div>
-        <ol className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3">
-          {PLANNED_EPISODES.map((title, i) => (
-            <li
-              key={i}
-              className="flex gap-3 border-b border-bone/40 pb-2 text-sage-100"
-            >
-              <span className="font-mono text-xs text-sage-400 tabular-nums pt-1 w-8 shrink-0">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span className="leading-snug">{title}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
     </>
   );
 }
 
 function EmptyState({ filterActive }: { filterActive: boolean }) {
-  // Outline / placeholder of what an episode card will look like once Season 1 ships.
-  const placeholders = [
-    { eyebrow: 'S1 · Ep 01', title: 'The 2am Symptom Check', topic: 'Wellness' },
-    { eyebrow: 'S1 · Ep 02', title: 'What Your Vet Wishes You Knew About Food', topic: 'Nutrition' },
-    { eyebrow: 'S1 · Ep 03', title: 'When a Limp Is an Emergency', topic: 'Emergency' }
-  ];
+  // Real Season 1 slate, rendered as "coming soon" cards so the page reflects
+  // the actual planned lineup instead of generic placeholders.
+  const slate = PLANNED_EPISODES.map((title, i) => ({
+    number: i + 1,
+    title
+  }));
 
   return (
     <div>
@@ -257,7 +224,10 @@ function EmptyState({ filterActive }: { filterActive: boolean }) {
         <p className="mt-3 max-w-2xl text-sage-200">
           {filterActive
             ? 'Once Season 1 ships, your filtered view will live here. In the meantime, clear the filters to see the full upcoming lineup, or send us a question for the show.'
-            : 'Petspective is taping Season 1 with practicing veterinarians right now. Subscribe via RSS, or drop a question and we may answer it on a future episode.'}
+            : `Petspective is taping Season 1 with practicing veterinarians right now —
+               ${slate.length} planned topics, plus a second topic each week pulled at
+               random from listener submissions. Subscribe via RSS, or drop a question
+               and we may answer it on a future episode.`}
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           {filterActive ? (
@@ -279,43 +249,38 @@ function EmptyState({ filterActive }: { filterActive: boolean }) {
         </div>
       </div>
 
-      {/* Skeleton card outline — shows the future shape of the feed. */}
-      <div className="mt-10">
-        <p className="eyebrow">What the feed will look like</p>
-        <div
-          className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          aria-hidden
-        >
-          {placeholders.map((p, i) => (
-            <div
-              key={i}
-              className="card flex flex-col opacity-70"
-            >
-              <div className="aspect-square bg-bone/60 relative grid place-items-center">
-                <div className="absolute inset-0 bg-gradient-to-br from-sage-700/30 to-ink/20" />
-                <span className="relative text-6xl text-sage-300/70">🩺</span>
-                <span className="absolute bottom-3 right-3 chip bg-ink/80 text-cream border-0">
-                  ~ 35 min
-                </span>
-                <span className="absolute top-3 left-3 chip bg-ink/80 text-sage-200 backdrop-blur">
-                  Coming Soon
-                </span>
-              </div>
-              <div className="p-5 flex-1 flex flex-col">
-                <p className="eyebrow text-[10px]">{p.eyebrow} · #{p.topic}</p>
-                <h3 className="mt-2 font-display font-bold text-lg leading-snug text-cream/90">
-                  {p.title}
-                </h3>
-                <div className="mt-3 space-y-2 flex-1">
-                  <div className="h-2 rounded bg-bone/40 w-full" />
-                  <div className="h-2 rounded bg-bone/40 w-5/6" />
-                  <div className="h-2 rounded bg-bone/40 w-2/3" />
+      {/* Season 1 slate — same card shape as the live feed, marked "Coming Soon". */}
+      {!filterActive && (
+        <div className="mt-10">
+          <div className="flex items-baseline justify-between gap-4 flex-wrap">
+            <p className="eyebrow">The Season 1 slate</p>
+            <p className="text-xs text-sage-400">
+              Order not final &middot; one planned topic + one listener pick per week
+            </p>
+          </div>
+          <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {slate.map((p) => (
+              <div key={p.number} className="card flex flex-col opacity-80">
+                <div className="aspect-square bg-bone/60 relative grid place-items-center">
+                  <div className="absolute inset-0 bg-gradient-to-br from-sage-700/30 to-ink/20" />
+                  <span className="relative text-6xl text-sage-300/70">🩺</span>
+                  <span className="absolute top-3 left-3 chip bg-ink/80 text-sage-200 backdrop-blur">
+                    Coming Soon
+                  </span>
+                </div>
+                <div className="p-5 flex-1 flex flex-col">
+                  <p className="eyebrow text-[10px]">
+                    S1 &middot; Ep {String(p.number).padStart(2, '0')}
+                  </p>
+                  <h3 className="mt-2 font-display font-bold text-lg leading-snug text-cream/90">
+                    {p.title}
+                  </h3>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

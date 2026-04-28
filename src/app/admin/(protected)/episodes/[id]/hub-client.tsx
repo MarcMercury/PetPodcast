@@ -447,17 +447,34 @@ export default function EpisodeHubClient({
             </div>
           </details>
           {imageOptions.length > 0 && (
-            <div className="grid grid-cols-2 gap-3 max-w-2xl sm:grid-cols-4">
-              {imageOptions.map((u) => (
-                <button
-                  key={u}
-                  onClick={() => selectImage(u)}
-                  className="rounded-xl overflow-hidden border-2 border-transparent hover:border-sage-600"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={u} alt="option" className="aspect-square w-full object-cover" />
-                </button>
-              ))}
+            <div className="grid gap-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-sage-600">
+                Pick one — clicking saves it as the episode cover
+              </p>
+              <div className="grid grid-cols-2 gap-3 max-w-2xl sm:grid-cols-4">
+                {imageOptions.map((u) => (
+                  <div key={u} className="grid gap-2">
+                    <button
+                      onClick={() => selectImage(u)}
+                      disabled={!!busy}
+                      className="group relative rounded-xl overflow-hidden border-2 border-sage-200 hover:border-sage-600 disabled:opacity-50"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={u} alt="option" className="aspect-square w-full object-cover" />
+                      <span className="absolute inset-x-0 bottom-0 bg-ink/70 px-2 py-1 text-center text-[11px] font-semibold text-white opacity-0 group-hover:opacity-100">
+                        Use this cover
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => selectImage(u)}
+                      disabled={!!busy}
+                      className="rounded-lg bg-sage-600 px-2 py-1 text-xs font-semibold text-white hover:bg-sage-700 disabled:opacity-50"
+                    >
+                      Save as cover
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

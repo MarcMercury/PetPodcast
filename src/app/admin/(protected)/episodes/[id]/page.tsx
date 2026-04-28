@@ -51,7 +51,15 @@ export default async function EpisodeHubPage({ params }: { params: { id: string 
           </p>
           <h1 className="font-display text-3xl font-bold">{ep.title}</h1>
           <p className="mt-1 text-xs text-sage-500">
-            <span className="rounded-full bg-sage-100 px-2 py-0.5 mr-2 uppercase">
+            <span
+              className={`rounded-full px-2 py-0.5 mr-2 uppercase font-semibold ${
+                ep.status === 'published'
+                  ? 'bg-emerald-100 text-emerald-800'
+                  : ep.status === 'draft'
+                  ? 'bg-amber-100 text-amber-800'
+                  : 'bg-sage-100 text-sage-700'
+              }`}
+            >
               {ep.status}
             </span>
             slug: <span className="font-mono">{ep.slug}</span>

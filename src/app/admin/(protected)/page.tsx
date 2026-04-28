@@ -16,7 +16,7 @@ export default async function AdminHome() {
 
   // "Drafts" = anything started but not yet published (draft or processing).
   // "Published" = live to listeners.
-  const [{ data: drafts }, { data: published }, { count: openMailbag }] = await Promise.all([
+  const [{ data: drafts }, { data: published }, { count: openMailbag }, { count: activeSubs }] = await Promise.all([
     supabase
       .from('episodes')
       .select('id, title, status, season, episode_number, published_at, updated_at')
@@ -29,7 +29,8 @@ export default async function AdminHome() {
       .eq('status', 'published')
       .order('published_at', { ascending: false })
       .limit(20),
-    supabase.from('mailbag').select('id', { count: 'exact', head: true }).eq('is_answered', false)
+    supabase.from('mailbag').select('id', { count: 'exact', head: true }).eq('is_answered', false),
+    supabase.from('subscribers').select('id', { count: 'exact', head: true }).is('unsubscribed_at', null)
   ]);
 
   const draftRows = (drafts ?? []) as Row[];
@@ -40,8 +41,8 @@ export default async function AdminHome() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatTile label="Drafts" value={draftRows.length} />
         <StatTile label="Published" value={publishedRows.length} />
-        <StatTile label="Total Episodes" value={draftRows.length + publishedRows.length} />
         <StatTile label="Open Mailbag" value={openMailbag ?? 0} href="/admin/mailbag" />
+        <StatTile label="Subscribers" value={activeSubs ?? 0} href="/admin/subscribers" />
       </div>
 
       <div className="flex">

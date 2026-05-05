@@ -23,8 +23,7 @@ const SHOW = {
   language: 'en-us',
   copyright: `© ${new Date().getFullYear()} Pet-spective`,
   category: 'Health & Fitness',
-  subCategory: 'Alternative Health',
-  explicit: 'no' as const,
+  explicit: 'false' as const,
   type: 'episodic' as const
 };
 
@@ -128,9 +127,7 @@ export async function GET() {
       <itunes:email>${escapeXml(SHOW.ownerEmail)}</itunes:email>
     </itunes:owner>
     <itunes:image href="${escapeXml(showImage)}"/>
-    <itunes:category text="${escapeXml(SHOW.category)}">
-      <itunes:category text="${escapeXml(SHOW.subCategory)}"/>
-    </itunes:category>
+    <itunes:category text="${escapeXml(SHOW.category)}"/>
 ${items}
   </channel>
 </rss>`;

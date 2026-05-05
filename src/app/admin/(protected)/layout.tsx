@@ -24,14 +24,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-8">
-      <div className="flex items-center justify-between border-b border-sage-100 pb-4">
+      <div className="flex items-center justify-between border-b border-bone pb-4">
         <h1 className="font-display text-2xl font-bold">Admin Lab</h1>
-        <nav className="flex gap-4 text-sm">
-          <Link href="/admin" className="hover:text-sage-600">Dashboard</Link>
-          <Link href="/admin/episodes" className="hover:text-sage-600">Episodes</Link>
-          <Link href="/admin/episodes/new" className="hover:text-sage-600">New Episode</Link>
-          <Link href="/admin/mailbag" className="hover:text-sage-600">Mailbag</Link>
-          <Link href="/admin/subscribers" className="hover:text-sage-600">Subscribers</Link>
+        <nav className="flex gap-4 text-sm text-sage-200">
+          <Link href="/admin" className="hover:text-cream">Dashboard</Link>
+          <Link href="/admin/episodes" className="hover:text-cream">Episodes</Link>
+          <Link href="/admin/episodes/new" className="hover:text-cream">New Episode</Link>
+          <Link href="/admin/mailbag" className="hover:text-cream">Mailbag</Link>
+          <Link href="/admin/subscribers" className="hover:text-cream">Subscribers</Link>
         </nav>
       </div>
       <div className="mt-8">{children}</div>

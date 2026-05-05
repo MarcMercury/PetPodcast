@@ -771,7 +771,7 @@ export default function StudioClient({
           <button
             onClick={deleteEpisode}
             disabled={!!busy}
-            className="rounded-lg border border-red-200 text-red-700 px-3 py-2 text-sm hover:bg-red-50 disabled:opacity-50"
+            className="rounded-lg border border-red-500/40 text-red-300 px-3 py-2 text-sm hover:bg-red-500/10 disabled:opacity-50"
           >
             Delete
           </button>
@@ -781,14 +781,14 @@ export default function StudioClient({
       {/* STATUS BAR */}
       {(busy || status || err) && (
         <div className="card p-3 text-sm">
-          {busy && <p className="text-sage-700">⏳ {busy}…</p>}
-          {status && !busy && <p className="text-emerald-700">{status}</p>}
-          {err && <p className="text-red-700">✕ {err}</p>}
+          {busy && <p className="text-sage-200">⏳ {busy}…</p>}
+          {status && !busy && <p className="text-emerald-300">{status}</p>}
+          {err && <p className="text-red-300">✕ {err}</p>}
         </div>
       )}
 
       {/* PROGRESS / TABS */}
-      <div className="flex flex-wrap gap-2 border-b border-sage-100 pb-2">
+      <div className="flex flex-wrap gap-2 border-b border-bone pb-2">
         <TabButton active={tab === 'source'} onClick={() => setTab('source')} done={hasSource}>
           1 · Source
         </TabButton>
@@ -927,7 +927,7 @@ export default function StudioClient({
           <div className="space-y-6">
             <div className="card p-4">
               {!sourceUrl ? (
-                <p className="text-sm text-sage-600">
+                <p className="text-sm text-sage-300">
                   Upload or record audio in the Source tab first.
                 </p>
               ) : (
@@ -961,7 +961,7 @@ export default function StudioClient({
                     >
                       Save edit
                     </button>
-                    <span className="ml-auto text-xs text-sage-500">
+                    <span className="ml-auto text-xs text-sage-400">
                       {fmt(playhead)} / {fmt(duration)} · {cuts.length} cuts · {chapters.length} chapters
                     </span>
                   </div>
@@ -1013,7 +1013,7 @@ export default function StudioClient({
 
             <div className="card p-4">
               <h4 className="font-display font-semibold">Intro / Outro</h4>
-              <label className="mt-2 block text-xs text-sage-600">
+              <label className="mt-2 block text-xs text-sage-300">
                 Intro {data?.project.intro_path ? '✓' : ''}
                 <input
                   type="file"
@@ -1022,7 +1022,7 @@ export default function StudioClient({
                   onChange={(e) => e.target.files?.[0] && uploadAux('intro', e.target.files[0])}
                 />
               </label>
-              <label className="mt-3 block text-xs text-sage-600">
+              <label className="mt-3 block text-xs text-sage-300">
                 Outro {data?.project.outro_path ? '✓' : ''}
                 <input
                   type="file"
@@ -1035,11 +1035,11 @@ export default function StudioClient({
 
             <div className="card p-4">
               <h4 className="font-display font-semibold">Polish (Auphonic)</h4>
-              <p className="mt-1 text-xs text-sage-500">
+              <p className="mt-1 text-xs text-sage-400">
                 Loudness leveling, denoise, hipass to broadcast spec (-16 LUFS).
               </p>
-              <p className="mt-2 text-xs text-sage-600">
-                Status: <span className="font-medium">{auphonicStatus ?? 'idle'}</span>
+              <p className="mt-2 text-xs text-sage-300">
+                Status: <span className="font-medium text-cream">{auphonicStatus ?? 'idle'}</span>
               </p>
               <button
                 onClick={startPolish}
@@ -1052,13 +1052,13 @@ export default function StudioClient({
 
             <div className="card p-4">
               <h4 className="font-display font-semibold">Render</h4>
-              <p className="mt-1 text-xs text-sage-500">
+              <p className="mt-1 text-xs text-sage-400">
                 Builds the final MP3 with cuts removed and intro/outro stitched, in your browser.
               </p>
               <button
                 onClick={() => renderFinal(false)}
                 disabled={!!busy || !sourceUrl}
-                className="mt-2 w-full rounded border border-sage-300 px-3 py-2 text-sm disabled:opacity-50"
+                className="mt-2 w-full rounded border border-bone text-cream px-3 py-2 text-sm hover:bg-ink disabled:opacity-50"
               >
                 Render preview
               </button>
@@ -1092,7 +1092,7 @@ export default function StudioClient({
             </button>
           </div>
           {!hasSource && (
-            <p className="mt-3 text-sm text-sage-500">
+            <p className="mt-3 text-sm text-sage-400">
               Upload or record audio in the Source tab first.
             </p>
           )}
@@ -1118,12 +1118,12 @@ export default function StudioClient({
               })}
             </div>
           ) : data?.transcript?.raw_text ? (
-            <p className="mt-4 whitespace-pre-line text-sm text-sage-800">
+            <p className="mt-4 whitespace-pre-line text-sm text-cream">
               {data.transcript.raw_text}
             </p>
           ) : (
             hasSource && (
-              <p className="mt-3 text-sm text-sage-500">No transcript yet — click the button above.</p>
+              <p className="mt-3 text-sm text-sage-400">No transcript yet — click the button above.</p>
             )
           )}
         </div>
@@ -1154,10 +1154,10 @@ export default function StudioClient({
             </button>
           </div>
           {!pipeline.hasTranscript && (
-            <p className="text-sm text-sage-500">Generate the transcript first.</p>
+            <p className="text-sm text-sage-400">Generate the transcript first.</p>
           )}
           {pipeline.showNotesSummary && (
-            <div className="rounded-lg bg-sage-50 p-3 text-sm">
+            <div className="rounded-lg bg-ink-soft border border-bone p-3 text-sm text-cream">
               <p className="font-semibold">Summary</p>
               <p className="mt-1 whitespace-pre-line">{pipeline.showNotesSummary}</p>
               {pipeline.showNotesTakeaways && pipeline.showNotesTakeaways.length > 0 && (
@@ -1188,7 +1188,7 @@ export default function StudioClient({
               />
             )}
           </div>
-          <p className="text-xs text-sage-500 max-w-2xl">
+          <p className="text-xs text-sage-400 max-w-2xl">
             Covers always render in the Petspective house style — sage / cream / ink palette,
             no faces, no text, calm negative-space top-left.
           </p>
@@ -1200,12 +1200,12 @@ export default function StudioClient({
             >
               ✨ Generate cover from episode
             </button>
-            <span className="text-[11px] text-sage-500 self-center">
+            <span className="text-[11px] text-sage-400 self-center">
               uses title + show notes summary
             </span>
           </div>
           <details>
-            <summary className="cursor-pointer text-sm text-sage-700">
+            <summary className="cursor-pointer text-sm text-sage-200 hover:text-cream">
               Or describe a custom subject
             </summary>
             <div className="mt-3 grid gap-3 max-w-2xl">
@@ -1227,7 +1227,7 @@ export default function StudioClient({
           </details>
           {imageOptions.length > 0 && (
             <div className="grid gap-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-sage-600">
+              <p className="text-xs font-semibold uppercase tracking-wide text-sage-300">
                 Pick one — clicking saves it as the episode cover
               </p>
               <div className="grid grid-cols-2 gap-3 max-w-2xl sm:grid-cols-4">
@@ -1270,7 +1270,7 @@ function StatusPill({ status }: { status: string }) {
       ? 'bg-emerald-100 text-emerald-800'
       : status === 'draft'
       ? 'bg-amber-100 text-amber-800'
-      : 'bg-sage-100 text-sage-700';
+      : 'bg-sage-800 text-sage-100';
   return (
     <span className={`rounded-full px-2 py-0.5 uppercase font-semibold ${cls}`}>{status}</span>
   );
@@ -1290,10 +1290,10 @@ function TabButton({
       className={[
         'rounded-lg px-3 py-2 text-sm font-medium transition',
         active
-          ? 'bg-sage-700 text-white'
+          ? 'bg-sage-700 text-cream'
           : done
-          ? 'bg-sage-100 text-sage-800 hover:bg-sage-200'
-          : 'bg-white text-sage-600 hover:bg-sage-50 border border-sage-100'
+          ? 'bg-sage-800 text-sage-100 hover:bg-sage-700'
+          : 'bg-ink-soft text-sage-200 hover:text-cream hover:bg-ink border border-bone'
       ].join(' ')}
     >
       {done && !active && <span className="mr-1">✓</span>}
@@ -1305,7 +1305,7 @@ function TabButton({
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="grid gap-1">
-      <span className="text-xs font-semibold uppercase tracking-wide text-sage-600">{label}</span>
+      <span className="text-xs font-semibold uppercase tracking-wide text-sage-300">{label}</span>
       {children}
     </label>
   );
@@ -1339,7 +1339,7 @@ function SourceTab({
       {/* Record */}
       <div className="card p-5">
         <h3 className="font-display text-lg font-semibold">Record in browser</h3>
-        <p className="mt-1 text-xs text-sage-500">
+        <p className="mt-1 text-xs text-sage-400">
           Plug your mic (and camera, if you want video) into this laptop or phone, then record straight
           into the Studio. We save audio as the episode source — if you record video, we'll strip the
           audio out automatically.
@@ -1350,7 +1350,7 @@ function SourceTab({
             disabled={recording}
             onClick={() => setRecMode('audio')}
             className={`rounded px-3 py-1 border ${
-              recMode === 'audio' ? 'bg-sage-700 text-white border-sage-700' : 'border-sage-200'
+              recMode === 'audio' ? 'bg-sage-700 text-cream border-sage-700' : 'border-bone text-cream hover:bg-ink'
             }`}
           >
             🎙️ Audio only
@@ -1359,7 +1359,7 @@ function SourceTab({
             disabled={recording}
             onClick={() => setRecMode('video')}
             className={`rounded px-3 py-1 border ${
-              recMode === 'video' ? 'bg-sage-700 text-white border-sage-700' : 'border-sage-200'
+              recMode === 'video' ? 'bg-sage-700 text-cream border-sage-700' : 'border-bone text-cream hover:bg-ink'
             }`}
           >
             🎥 Audio + Video
@@ -1390,7 +1390,7 @@ function SourceTab({
               </button>
               <button
                 onClick={cancelRecording}
-                className="rounded-lg border border-sage-200 px-3 py-1 text-sm"
+                className="rounded-lg border border-bone text-cream px-3 py-1 text-sm hover:bg-ink"
               >
                 Cancel
               </button>
@@ -1400,7 +1400,7 @@ function SourceTab({
 
         {recPreviewUrl && !recording && (
           <div className="mt-4 grid gap-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-sage-600">Preview</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-sage-300">Preview</p>
             {recMode === 'video' ? (
               <video src={recPreviewUrl} controls className="aspect-video w-full rounded-lg" />
             ) : (
@@ -1412,7 +1412,7 @@ function SourceTab({
               </button>
               <button
                 onClick={cancelRecording}
-                className="rounded-lg border border-sage-200 px-3 py-1 text-sm"
+                className="rounded-lg border border-bone text-cream px-3 py-1 text-sm hover:bg-ink"
               >
                 Discard
               </button>
@@ -1424,38 +1424,38 @@ function SourceTab({
       {/* Upload */}
       <div className="card p-5">
         <h3 className="font-display text-lg font-semibold">Upload a file</h3>
-        <p className="mt-1 text-xs text-sage-500">
+        <p className="mt-1 text-xs text-sage-400">
           Already have a recording? Drop in an MP3 / WAV / M4A — or a phone video and we'll extract the
           audio in your browser.
         </p>
-        <label className="mt-4 block border-2 border-dashed border-sage-300 rounded-2xl p-6 text-center cursor-pointer hover:bg-sage-50">
+        <label className="mt-4 block border-2 border-dashed border-sage-700 rounded-2xl p-6 text-center cursor-pointer hover:bg-ink hover:border-sage-400">
           <input
             type="file"
             accept="audio/mpeg,audio/wav,audio/mp4,audio/x-m4a,audio/webm"
             className="hidden"
             onChange={(e) => e.target.files?.[0] && uploadAudioFile(e.target.files[0])}
           />
-          <p className="text-sm text-sage-700 font-medium">🎵 Upload audio</p>
-          <p className="mt-1 text-xs text-sage-500">MP3, WAV, M4A, WebM</p>
+          <p className="text-sm text-cream font-medium">🎵 Upload audio</p>
+          <p className="mt-1 text-xs text-sage-400">MP3, WAV, M4A, WebM</p>
         </label>
-        <label className="mt-3 block border-2 border-dashed border-sage-300 rounded-2xl p-6 text-center cursor-pointer hover:bg-sage-50">
+        <label className="mt-3 block border-2 border-dashed border-sage-700 rounded-2xl p-6 text-center cursor-pointer hover:bg-ink hover:border-sage-400">
           <input
             type="file"
             accept="video/*"
             className="hidden"
             onChange={(e) => e.target.files?.[0] && uploadVideoFile(e.target.files[0])}
           />
-          <p className="text-sm text-sage-700 font-medium">🎥 Upload video (we'll extract audio)</p>
-          <p className="mt-1 text-xs text-sage-500">MP4, MOV, WebM — runs in your browser</p>
+          <p className="text-sm text-cream font-medium">🎥 Upload video (we'll extract audio)</p>
+          <p className="mt-1 text-xs text-sage-400">MP4, MOV, WebM — runs in your browser</p>
         </label>
 
         {hasSource && sourceUrl && (
           <div className="mt-5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-sage-600">
+            <p className="text-xs font-semibold uppercase tracking-wide text-sage-300">
               Current source ✓
             </p>
             <audio src={sourceUrl} controls className="mt-2 w-full" />
-            <p className="mt-1 text-xs text-sage-500">
+            <p className="mt-1 text-xs text-sage-400">
               Uploading or recording again will replace it.
             </p>
           </div>

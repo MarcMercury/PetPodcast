@@ -40,7 +40,7 @@ export function AddSubscriberForm() {
   return (
     <form onSubmit={submit} className="card p-4 flex flex-wrap items-end gap-3">
       <div className="flex-1 min-w-[240px]">
-        <label className="block text-xs uppercase tracking-wide text-sage-600 mb-1">
+        <label className="block text-xs uppercase tracking-wide text-sage-300 mb-1">
           Add subscriber
         </label>
         <input
@@ -49,7 +49,7 @@ export function AddSubscriberForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="listener@example.com"
-          className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sage-400"
+          className="w-full rounded-lg border border-bone bg-ink-soft text-cream placeholder:text-sage-400 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sage-400"
         />
       </div>
       <button
@@ -59,8 +59,8 @@ export function AddSubscriberForm() {
       >
         {busy ? 'Adding…' : 'Add'}
       </button>
-      {err && <div className="basis-full text-xs text-red-700">{err}</div>}
-      {ok && <div className="basis-full text-xs text-sage-700">Added.</div>}
+      {err && <div className="basis-full text-xs text-red-300">{err}</div>}
+      {ok && <div className="basis-full text-xs text-sage-200">Added.</div>}
     </form>
   );
 }

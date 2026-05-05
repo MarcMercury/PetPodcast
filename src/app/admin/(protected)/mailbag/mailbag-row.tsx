@@ -50,7 +50,7 @@ export function MailbagRow({ entry }: { entry: MailbagEntry }) {
     <li className="card p-5">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-xs text-sage-600">
+          <div className="flex items-center gap-2 text-xs text-sage-300">
             <span className="font-mono">{date}</span>
             {entry.category && (
               <>
@@ -68,17 +68,17 @@ export function MailbagRow({ entry }: { entry: MailbagEntry }) {
               </span>
             )}
           </div>
-          <p className="mt-2 text-sm text-sage-900 whitespace-pre-line">{entry.question}</p>
+          <p className="mt-2 text-sm text-cream whitespace-pre-line">{entry.question}</p>
         </div>
       </div>
 
-      {err && <div className="mt-3 text-xs text-red-700">{err}</div>}
+      {err && <div className="mt-3 text-xs text-red-300">{err}</div>}
 
       <div className="mt-4 flex flex-wrap gap-2">
         <button
           onClick={() => call('PATCH', { is_answered: !entry.is_answered })}
           disabled={disabled}
-          className="rounded-lg border border-sage-200 px-3 py-1.5 text-sm hover:bg-sage-50 disabled:opacity-50"
+          className="rounded-lg border border-bone text-cream px-3 py-1.5 text-sm hover:bg-ink hover:border-sage-700 disabled:opacity-50"
         >
           {entry.is_answered ? 'Mark open' : 'Mark answered'}
         </button>
@@ -87,7 +87,7 @@ export function MailbagRow({ entry }: { entry: MailbagEntry }) {
             if (confirm('Delete this mailbag entry? This cannot be undone.')) call('DELETE');
           }}
           disabled={disabled}
-          className="ml-auto rounded-lg border border-red-200 text-red-700 px-3 py-1.5 text-sm hover:bg-red-50 disabled:opacity-50"
+          className="ml-auto rounded-lg border border-red-500/40 text-red-300 px-3 py-1.5 text-sm hover:bg-red-500/10 disabled:opacity-50"
         >
           Delete
         </button>

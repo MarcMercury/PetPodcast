@@ -73,7 +73,7 @@ export default async function AdminHome() {
 function StatTile({ label, value, href }: { label: string; value: number; href?: string }) {
   const card = (
     <div className="card p-6 h-full">
-      <p className="text-xs uppercase text-sage-600 tracking-wider">{label}</p>
+      <p className="text-xs uppercase text-sage-300 tracking-wider">{label}</p>
       <p className="mt-2 text-4xl font-bold">{value}</p>
     </div>
   );
@@ -104,27 +104,27 @@ function EpisodeColumn({
       <div className="flex items-baseline justify-between">
         <div>
           <h3 className="font-display text-lg font-semibold">{title}</h3>
-          <p className="text-xs text-sage-500">{subtitle}</p>
+          <p className="text-xs text-sage-400">{subtitle}</p>
         </div>
-        <Link href="/admin/episodes" className="text-xs text-sage-600 hover:underline">
+        <Link href="/admin/episodes" className="text-xs text-sage-300 hover:text-cream hover:underline">
           All →
         </Link>
       </div>
       {rows.length === 0 ? (
-        <p className="mt-4 text-sm text-sage-500">{emptyHint}</p>
+        <p className="mt-4 text-sm text-sage-400">{emptyHint}</p>
       ) : (
-        <ul className="mt-4 divide-y divide-sage-100">
+        <ul className="mt-4 divide-y divide-bone">
           {rows.map((r) => (
             <li key={r.id} className="py-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs uppercase tracking-wide text-sage-500">
+                  <p className="text-xs uppercase tracking-wide text-sage-400">
                     {r.season ? `S${r.season} · ` : ''}
                     {r.episode_number ? `Ep ${r.episode_number}` : 'Episode'}
                     {showStatus && r.status !== 'draft' ? ` · ${r.status}` : ''}
                   </p>
-                  <p className="mt-1 truncate text-sm font-medium">{r.title}</p>
-                  <p className="mt-1 text-xs text-sage-500">
+                  <p className="mt-1 truncate text-sm font-medium text-cream">{r.title}</p>
+                  <p className="mt-1 text-xs text-sage-400">
                     {r.published_at
                       ? `Published ${new Date(r.published_at).toLocaleDateString()}`
                       : r.updated_at
@@ -135,7 +135,7 @@ function EpisodeColumn({
                 <div className="flex shrink-0 gap-3 text-xs">
                   <Link
                     href={`/admin/episodes/${r.id}/studio`}
-                    className="text-sage-700 hover:underline"
+                    className="text-sage-300 hover:text-cream hover:underline"
                   >
                     Open Studio →
                   </Link>

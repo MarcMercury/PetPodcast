@@ -39,16 +39,16 @@ export default function NewEpisodePage() {
 
   return (
     <div className="max-w-xl">
-      <p className="text-sm uppercase tracking-wide text-sage-500">New episode</p>
+      <p className="text-sm uppercase tracking-wide text-sage-400">New episode</p>
       <h1 className="font-display text-3xl font-bold">Start a draft</h1>
-      <p className="mt-2 text-sm text-sage-600">
+      <p className="mt-2 text-sm text-sage-300">
         Give it a working title. You'll record, edit, transcribe, and ship from the Studio.
         You can rename it any time.
       </p>
 
       <form onSubmit={create} className="card p-6 mt-6 grid gap-4">
         <label className="grid gap-1">
-          <span className="text-xs font-semibold uppercase tracking-wide text-sage-600">
+          <span className="text-xs font-semibold uppercase tracking-wide text-sage-300">
             Working title
           </span>
           <input
@@ -59,7 +59,7 @@ export default function NewEpisodePage() {
             className="rounded-xl border border-sage-200 bg-white px-4 py-3 text-ink placeholder:text-sage-400"
           />
         </label>
-        {err && <p className="text-sm text-red-700">✕ {err}</p>}
+        {err && <p className="text-sm text-red-300">✕ {err}</p>}
         <div className="flex items-center gap-3">
           <button
             type="submit"
@@ -68,7 +68,7 @@ export default function NewEpisodePage() {
           >
             {busy ? 'Creating draft…' : 'Open Studio →'}
           </button>
-          <Link href="/admin" className="text-sm text-sage-600 hover:underline">
+          <Link href="/admin" className="text-sm text-sage-300 hover:text-cream hover:underline">
             Cancel
           </Link>
         </div>

@@ -64,7 +64,7 @@ export default async function SubscribersPage({
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h2 className="text-2xl font-bold">Subscribers</h2>
-          <p className="text-sm text-sage-600 mt-1">
+          <p className="text-sm text-sage-300 mt-1">
             Listeners opted in to new-episode updates from the homepage. Sending
             transactional mail isn&apos;t wired up yet — this list is the source of
             truth when it is.
@@ -83,8 +83,8 @@ export default async function SubscribersPage({
                 href={href}
                 className={`px-3 py-1.5 rounded-full text-sm border ${
                   active
-                    ? 'bg-sage-600 text-white border-sage-600'
-                    : 'bg-white border-sage-200 text-sage-700 hover:border-sage-400'
+                    ? 'bg-sage-600 text-cream border-sage-600'
+                    : 'bg-ink-soft border-bone text-sage-200 hover:border-sage-400'
                 }`}
               >
                 {t.label} <span className="opacity-70">({t.n})</span>
@@ -107,11 +107,11 @@ export default async function SubscribersPage({
           name="q"
           defaultValue={search}
           placeholder="Search email…"
-          className="flex-1 rounded-lg border border-sage-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sage-400"
+          className="flex-1 rounded-lg border border-bone bg-ink-soft text-cream placeholder:text-sage-400 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sage-400"
         />
         <button
           type="submit"
-          className="rounded-lg border border-sage-200 px-3 py-2 text-sm hover:bg-sage-50"
+          className="rounded-lg border border-bone text-cream px-3 py-2 text-sm hover:bg-ink hover:border-sage-700"
         >
           Search
         </button>
@@ -122,7 +122,7 @@ export default async function SubscribersPage({
                 ? '/admin/subscribers'
                 : `/admin/subscribers?filter=${filter}`
             }
-            className="rounded-lg border border-sage-200 px-3 py-2 text-sm hover:bg-sage-50"
+            className="rounded-lg border border-bone text-cream px-3 py-2 text-sm hover:bg-ink hover:border-sage-700"
           >
             Clear
           </a>
@@ -130,13 +130,13 @@ export default async function SubscribersPage({
       </form>
 
       {error && (
-        <div className="rounded-lg bg-red-50 text-red-700 px-3 py-2 text-sm">
+        <div className="rounded-lg bg-red-500/10 text-red-300 px-3 py-2 text-sm">
           {error.message}
         </div>
       )}
 
       {rows.length === 0 ? (
-        <div className="card p-8 text-center text-sage-600">
+        <div className="card p-8 text-center text-sage-300">
           {search
             ? `No subscribers match “${search}”.`
             : filter === 'active'

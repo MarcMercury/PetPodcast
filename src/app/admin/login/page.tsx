@@ -36,11 +36,11 @@ function LoginForm() {
     <div className="mx-auto max-w-md px-6 py-20">
       <div className="card p-8">
         <h1 className="text-2xl font-bold">Admin Sign-in</h1>
-        <p className="text-sage-600 text-sm mt-1">
+        <p className="text-sage-300 text-sm mt-1">
           Restricted to Pet Podcast creators.
         </p>
         {denied && (
-          <p className="mt-4 rounded-lg bg-red-50 text-red-700 px-3 py-2 text-sm">
+          <p className="mt-4 rounded-lg bg-red-500/10 text-red-300 px-3 py-2 text-sm">
             Your account does not have admin/vet access.
           </p>
         )}
@@ -51,7 +51,7 @@ function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
-            className="rounded-xl border border-sage-200 px-4 py-3"
+            className="rounded-xl border border-bone bg-ink-soft text-cream placeholder:text-sage-400 px-4 py-3"
           />
           <input
             type="password"
@@ -59,14 +59,14 @@ function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            className="rounded-xl border border-sage-200 px-4 py-3"
+            className="rounded-xl border border-bone bg-ink-soft text-cream placeholder:text-sage-400 px-4 py-3"
           />
-          {err && <p className="text-sm text-red-600">{err}</p>}
+          {err && <p className="text-sm text-red-300">{err}</p>}
           <button disabled={loading} className="btn-primary justify-center">
             {loading ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
-        <p className="mt-4 text-xs text-sage-500">
+        <p className="mt-4 text-xs text-sage-400">
           Tip: enable 2FA on your Supabase auth user for production.
         </p>
       </div>

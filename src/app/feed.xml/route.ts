@@ -66,10 +66,11 @@ export async function GET() {
 
   const episodes = (data ?? []) as Episode[];
 
-  // Find a show-level artwork: use the most recent episode image, fall back
-  // to a static placeholder. (Apple wants 1400×1400 to 3000×3000 JPG/PNG.)
-  const showImage =
-    episodes.find((e) => e.image_url)?.image_url ?? `${siteUrl}/og-default.png`;
+  // Show-level artwork. Apple requires 1400×1400 to 3000×3000 JPG/PNG, RGB.
+  // We always serve a stable show cover from /public so directories see the
+  // same image regardless of episode count or per-episode art.
+  // Regenerate via `node scripts/generate-show-cover.mjs`.
+  const showImage = `${siteUrl}/brand/show-cover.jpg`;
 
   const items = episodes
     .map((ep) => {
@@ -107,6 +108,7 @@ export async function GET() {
 <rss version="2.0"
   xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
   xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:podcast="https://podcastindex.org/namespace/1.0"
   xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${escapeXml(SHOW.title)}</title>
@@ -115,6 +117,8 @@ export async function GET() {
     <language>${SHOW.language}</language>
     <copyright>${escapeXml(SHOW.copyright)}</copyright>
     <atom:link href="${escapeXml(siteUrl)}/feed.xml" rel="self" type="application/rss+xml"/>
+    <podcast:guid>202d073a-09b2-50e6-9cc8-a791655e7a6b</podcast:guid>
+    <podcast:locked owner="${escapeXml(SHOW.ownerEmail)}">yes</podcast:locked>
     <itunes:author>${escapeXml(SHOW.author)}</itunes:author>
     <itunes:summary>${cdata(SHOW.description)}</itunes:summary>
     <itunes:type>${SHOW.type}</itunes:type>

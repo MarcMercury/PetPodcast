@@ -49,7 +49,7 @@ export function SubscriberRow({ entry }: { entry: Subscriber }) {
     <li className="card p-4">
       <div className="flex flex-wrap items-center gap-3">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 text-xs text-sage-600">
+          <div className="flex items-center gap-2 text-xs text-sage-300">
             <span className="font-mono">{date}</span>
             {entry.source && (
               <>
@@ -67,14 +67,14 @@ export function SubscriberRow({ entry }: { entry: Subscriber }) {
               </span>
             )}
           </div>
-          <p className="mt-1 truncate text-sm font-medium text-sage-900">{entry.email}</p>
+          <p className="mt-1 truncate text-sm font-medium text-cream">{entry.email}</p>
         </div>
 
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => call('PATCH', { unsubscribed: !isUnsub })}
             disabled={disabled}
-            className="rounded-lg border border-sage-200 px-3 py-1.5 text-sm hover:bg-sage-50 disabled:opacity-50"
+            className="rounded-lg border border-bone text-cream px-3 py-1.5 text-sm hover:bg-ink hover:border-sage-700 disabled:opacity-50"
           >
             {isUnsub ? 'Resubscribe' : 'Unsubscribe'}
           </button>
@@ -83,14 +83,14 @@ export function SubscriberRow({ entry }: { entry: Subscriber }) {
               if (confirm(`Delete ${entry.email}? This cannot be undone.`)) call('DELETE');
             }}
             disabled={disabled}
-            className="rounded-lg border border-red-200 text-red-700 px-3 py-1.5 text-sm hover:bg-red-50 disabled:opacity-50"
+            className="rounded-lg border border-red-500/40 text-red-300 px-3 py-1.5 text-sm hover:bg-red-500/10 disabled:opacity-50"
           >
             Delete
           </button>
         </div>
       </div>
 
-      {err && <div className="mt-2 text-xs text-red-700">{err}</div>}
+      {err && <div className="mt-2 text-xs text-red-300">{err}</div>}
     </li>
   );
 }

@@ -57,7 +57,7 @@ export default async function MailbagInbox({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Mailbag</h2>
-          <p className="text-sm text-sage-600 mt-1">
+          <p className="text-sm text-sage-300 mt-1">
             The Wildcard queue. Listener questions submitted from the homepage form —
             pulled live on air by the random question generator during the wildcard
             segment.
@@ -72,8 +72,8 @@ export default async function MailbagInbox({
                 href={t.key === 'open' ? '/admin/mailbag' : `/admin/mailbag?filter=${t.key}`}
                 className={`px-3 py-1.5 rounded-full text-sm border ${
                   active
-                    ? 'bg-sage-600 text-white border-sage-600'
-                    : 'bg-white border-sage-200 text-sage-700 hover:border-sage-400'
+                    ? 'bg-sage-600 text-cream border-sage-600'
+                    : 'bg-ink-soft border-bone text-sage-200 hover:border-sage-400'
                 }`}
               >
                 {t.label} <span className="opacity-70">({t.n})</span>
@@ -84,13 +84,13 @@ export default async function MailbagInbox({
       </div>
 
       {error && (
-        <div className="rounded-lg bg-red-50 text-red-700 px-3 py-2 text-sm">
+        <div className="rounded-lg bg-red-500/10 text-red-300 px-3 py-2 text-sm">
           {error.message}
         </div>
       )}
 
       {rows.length === 0 ? (
-        <div className="card p-8 text-center text-sage-600">
+        <div className="card p-8 text-center text-sage-300">
           {filter === 'open'
             ? 'Inbox zero. No open questions right now.'
             : filter === 'answered'

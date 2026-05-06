@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { createSupabaseServer } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export const metadata: Metadata = {
   title: 'Petspective — See Your Pet Through a Vet’s Eyes',
@@ -52,7 +54,23 @@ function Wordmark() {
   );
 }
 
-function SiteHeader() {
+async function SiteHeader() {
+  // The Studio link is creator-only. We hide it from the public so visitors
+  // don't see (or click) an entry point that just bounces them to /admin/login.
+  let isCreator = false;
+  try {
+    const supabase = createSupabaseServer();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabaseAdmin
+        .from('profiles').select('role').eq('id', user.id).maybeSingle();
+      isCreator = !!profile && ['admin', 'vet'].includes(profile.role);
+    }
+  } catch {
+    // If anything goes wrong (e.g. missing env in a preview), default to hiding.
+    isCreator = false;
+  }
+
   return (
     <header className="sticky top-0 z-40 backdrop-blur bg-ink/75 border-b border-bone">
       <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
@@ -62,17 +80,20 @@ function SiteHeader() {
         <nav className="flex items-center gap-6 text-sm text-sage-200">
           <a href="/episodes" className="hover:text-sage-300 transition">Episodes</a>
           <a href="/breeds" className="hover:text-sage-300 transition">Breeds</a>
+          <a href="/knowledge" className="hover:text-sage-300 transition">Knowledge</a>
           <a href="/#vets" className="hover:text-sage-300 transition">The Pack</a>
           <a href="/recalls" className="hover:text-sage-300 transition">Recalls</a>
           <a href="/#ask" className="hover:text-sage-300 transition">Ask a Vet</a>
           <a href="/#subscribe" className="hover:text-sage-300 transition">Subscribe</a>
-          <a
-            href="/admin"
-            className="btn-ghost text-xs py-1.5"
-            title="Creators only — sign-in required"
-          >
-            Studio
-          </a>
+          {isCreator && (
+            <a
+              href="/admin"
+              className="btn-ghost text-xs py-1.5"
+              title="Creators only"
+            >
+              Studio
+            </a>
+          )}
         </nav>
       </div>
     </header>

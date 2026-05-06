@@ -420,9 +420,9 @@ export default async function HomePage({
           </form>
           <p className="text-sage-300/70 mt-3 text-xs leading-relaxed">
             Prefer a podcast app?{' '}
-            <a href="/feed.xml" className="underline-offset-4 hover:underline text-sage-200">
-              Subscribe via RSS
-            </a>{' '}
+            <Link href="/subscribe" className="underline-offset-4 hover:underline text-sage-200">
+              Subscribe in any app
+            </Link>{' '}
             or on{' '}
             <a
               href="https://open.spotify.com/show/1d2EE3HdRE2LzqdyInWTR0"

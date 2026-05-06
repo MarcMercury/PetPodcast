@@ -241,7 +241,7 @@ function EmptyState({ filterActive }: { filterActive: boolean }) {
               >
                 Watch on YouTube
               </a>
-              <a href="/feed.xml" className="btn-ghost">Subscribe via RSS</a>
+              <Link href="/subscribe" className="btn-ghost">Subscribe</Link>
             </>
           )}
           <Link href="/#ask" className="btn-ghost">Ask a Vet</Link>

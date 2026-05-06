@@ -710,6 +710,110 @@ export default function StudioClient({
       router.refresh();
     });
 
+  // ─── YouTube export: cover + final audio → MP4 download ──────────
+  // ffmpeg.wasm's default core is LGPL and does NOT ship libx264, so we
+  // encode the (single, static) image track with the built-in mpeg4 codec.
+  // YouTube's ingest accepts MPEG-4 part 2 in an .mp4 container fine.
+  const exportYouTubeMp4 = () =>
+    call('Building YouTube MP4', async () => {
+      const audioUrl = data?.urls.final ?? episode.audio_url;
+      if (!audioUrl) throw new Error('Render or publish a final audio file first.');
+      if (!episode.image_url) throw new Error('Pick a cover image first.');
+
+      setBusy('Loading ffmpeg…');
+      const ff = await loadFFmpeg();
+      const { fetchFile } = await import('@ffmpeg/util');
+
+      setBusy('Fetching audio + cover…');
+      await ff.writeFile('cover.jpg', await fetchFile(episode.image_url));
+      await ff.writeFile('audio.mp3', await fetchFile(audioUrl));
+
+      setBusy('Encoding video (this can take a few minutes)…');
+      // Pad square cover into 1920x1080 with brand ink background.
+      // mpeg4 q:v 5 is a good size/quality balance for a still image.
+      await ff.exec([
+        '-loop', '1',
+        '-framerate', '1',
+        '-i', 'cover.jpg',
+        '-i', 'audio.mp3',
+        '-map', '0:v',
+        '-map', '1:a',
+        '-c:v', 'mpeg4',
+        '-q:v', '5',
+        '-pix_fmt', 'yuv420p',
+        '-r', '1',
+        '-c:a', 'aac',
+        '-b:a', '192k',
+        '-shortest',
+        '-vf', 'scale=1080:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=0x080d0a',
+        '-movflags', '+faststart',
+        'out.mp4'
+      ]);
+
+      const out = (await ff.readFile('out.mp4')) as Uint8Array;
+      const buf = new ArrayBuffer(out.byteLength);
+      new Uint8Array(buf).set(out);
+      const blob = new Blob([buf], { type: 'video/mp4' });
+      const url = URL.createObjectURL(blob);
+      const safeSlug = (episode.slug || episode.id).replace(/[^a-z0-9-]/gi, '-');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${safeSlug}-youtube.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setStatus('YouTube MP4 downloaded. Upload it on youtube.com and paste the description.');
+    });
+
+  // Builds a description ready to paste into YouTube — summary, chapters
+  // as hh:mm:ss timestamps (YouTube auto-detects them when the first is 0:00),
+  // key takeaways, and a backlink to the canonical episode page.
+  const buildYouTubeDescription = () => {
+    const lines: string[] = [];
+    if (pipeline.showNotesSummary) {
+      lines.push(pipeline.showNotesSummary.trim());
+      lines.push('');
+    }
+    const sortedChapters = [...chapters].sort((a, b) => a.time - b.time);
+    if (sortedChapters.length > 0) {
+      lines.push('Chapters');
+      const fmtTs = (t: number) => {
+        const total = Math.max(0, Math.floor(t));
+        const h = Math.floor(total / 3600);
+        const m = Math.floor((total % 3600) / 60);
+        const s = total % 60;
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
+      };
+      // YouTube needs the first chapter to be 0:00.
+      const first = sortedChapters[0];
+      if (first.time > 0) lines.push(`0:00 ${first.title}`);
+      for (const ch of sortedChapters) {
+        lines.push(`${fmtTs(ch.time)} ${ch.title}`);
+      }
+      lines.push('');
+    }
+    if (pipeline.showNotesTakeaways && pipeline.showNotesTakeaways.length > 0) {
+      lines.push('Key takeaways');
+      for (const t of pipeline.showNotesTakeaways) lines.push(`• ${t}`);
+      lines.push('');
+    }
+    lines.push(`Full show notes & transcript: https://www.podcast.pet/episode/${episode.slug}`);
+    return lines.join('\n');
+  };
+
+  const copyYouTubeDescription = async () => {
+    try {
+      await navigator.clipboard.writeText(buildYouTubeDescription());
+      setStatus('YouTube description copied to clipboard.');
+    } catch {
+      setErr('Clipboard blocked. Open the preview and copy manually.');
+    }
+  };
+
+  const [showYtPreview, setShowYtPreview] = useState(false);
+
   // ─── Render ──────────────────────────────────────────────────────
   const fmt = (t: number) => {
     const m = Math.floor(t / 60);
@@ -1248,6 +1352,53 @@ export default function StudioClient({
               </div>
             </div>
           )}
+
+          {/* ─── YouTube export ───────────────────────────────────── */}
+          <div className="mt-2 grid gap-3 border-t border-sage-200 pt-5">
+            <div className="flex flex-wrap items-baseline gap-2">
+              <h4 className="font-display text-base font-semibold">YouTube export</h4>
+              <span className="text-[11px] text-sage-400">
+                {(data?.urls.final || episode.audio_url) ? '' : 'Render final audio first.'}
+                {!episode.image_url ? ' Pick a cover first.' : ''}
+              </span>
+            </div>
+            <p className="text-xs text-sage-400 max-w-2xl">
+              Combines the cover with the final audio into a 1920×1080 MP4 you can upload at
+              youtube.com. Encoding runs in your browser and can take a few minutes for long
+              episodes.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={exportYouTubeMp4}
+                disabled={
+                  !!busy ||
+                  !episode.image_url ||
+                  !(data?.urls.final || episode.audio_url)
+                }
+                className="btn-primary text-sm disabled:opacity-50"
+              >
+                ⬇ Download YouTube MP4
+              </button>
+              <button
+                onClick={copyYouTubeDescription}
+                disabled={!!busy}
+                className="rounded-lg border border-sage-300 px-3 py-2 text-sm hover:bg-sage-50"
+              >
+                📋 Copy YouTube description
+              </button>
+              <button
+                onClick={() => setShowYtPreview((v) => !v)}
+                className="rounded-lg border border-sage-300 px-3 py-2 text-sm hover:bg-sage-50"
+              >
+                {showYtPreview ? 'Hide preview' : 'Preview description'}
+              </button>
+            </div>
+            {showYtPreview && (
+              <pre className="max-w-2xl whitespace-pre-wrap rounded-xl border border-sage-200 bg-cream p-4 text-xs text-ink">
+                {buildYouTubeDescription()}
+              </pre>
+            )}
+          </div>
         </div>
       )}
     </div>

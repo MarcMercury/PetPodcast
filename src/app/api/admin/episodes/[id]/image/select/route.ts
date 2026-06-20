@@ -7,12 +7,34 @@ import { BUCKETS, assertPetBucket } from '@/lib/isolation';
 const IMG_BUCKET = process.env.SUPABASE_BUCKET_IMAGES || BUCKETS.images;
 assertPetBucket(IMG_BUCKET);
 
+// Only allow image fetches from known AI image CDNs and our own storage.
+const ALLOWED_IMAGE_HOSTS = [
+  'oaidalleapiprodscus.blob.core.windows.net',
+  'dalleprodsec.blob.core.windows.net',
+  'generativelanguage.googleapis.com',
+  'storage.googleapis.com',
+  new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co').hostname,
+];
+
+function isAllowedImageUrl(input: string): boolean {
+  try {
+    const parsed = new URL(input);
+    if (parsed.protocol !== 'https:') return false;
+    return ALLOWED_IMAGE_HOSTS.some((h) => parsed.hostname === h || parsed.hostname.endsWith(`.${h}`));
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const auth = await requireCreator();
   if ('error' in auth) return auth.error;
 
   const { url } = await req.json();
   if (!url) return NextResponse.json({ error: 'url required' }, { status: 400 });
+  if (!isAllowedImageUrl(url)) {
+    return NextResponse.json({ error: 'url must be HTTPS from a trusted image host' }, { status: 400 });
+  }
 
   try {
     // Download remote AI image, then re-upload to our Supabase bucket for permanence.

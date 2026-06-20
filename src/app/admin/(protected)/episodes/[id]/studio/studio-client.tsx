@@ -1492,7 +1492,7 @@ function SourceTab({
         <h3 className="font-display text-lg font-semibold">Record in browser</h3>
         <p className="mt-1 text-xs text-sage-400">
           Plug your mic (and camera, if you want video) into this laptop or phone, then record straight
-          into the Studio. We save audio as the episode source — if you record video, we'll strip the
+          into the Studio. We save audio as the episode source — if you record video, we&apos;ll strip the
           audio out automatically.
         </p>
 
@@ -1576,7 +1576,7 @@ function SourceTab({
       <div className="card p-5">
         <h3 className="font-display text-lg font-semibold">Upload a file</h3>
         <p className="mt-1 text-xs text-sage-400">
-          Already have a recording? Drop in an MP3 / WAV / M4A — or a phone video and we'll extract the
+          Already have a recording? Drop in an MP3 / WAV / M4A — or a phone video and we&apos;ll extract the
           audio in your browser.
         </p>
         <label className="mt-4 block border-2 border-dashed border-sage-700 rounded-2xl p-6 text-center cursor-pointer hover:bg-ink hover:border-sage-400">
@@ -1596,7 +1596,7 @@ function SourceTab({
             className="hidden"
             onChange={(e) => e.target.files?.[0] && uploadVideoFile(e.target.files[0])}
           />
-          <p className="text-sm text-cream font-medium">🎥 Upload video (we'll extract audio)</p>
+          <p className="text-sm text-cream font-medium">🎥 Upload video (we&apos;ll extract audio)</p>
           <p className="mt-1 text-xs text-sage-400">MP4, MOV, WebM — runs in your browser</p>
         </label>
 

@@ -42,7 +42,7 @@ export default function NewEpisodePage() {
       <p className="text-sm uppercase tracking-wide text-sage-400">New episode</p>
       <h1 className="font-display text-3xl font-bold">Start a draft</h1>
       <p className="mt-2 text-sm text-sage-300">
-        Give it a working title. You'll record, edit, transcribe, and ship from the Studio.
+        Give it a working title. You&apos;ll record, edit, transcribe, and ship from the Studio.
         You can rename it any time.
       </p>
 

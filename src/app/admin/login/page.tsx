@@ -12,7 +12,6 @@ export default function LoginPage() {
 }
 
 function LoginForm() {
-  const supabase = createSupabaseBrowser();
   const router = useRouter();
   const params = useSearchParams();
   const denied = params.get('denied');
@@ -26,6 +25,7 @@ function LoginForm() {
     e.preventDefault();
     setErr(null);
     setLoading(true);
+    const supabase = createSupabaseBrowser();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) setErr(error.message);

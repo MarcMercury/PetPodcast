@@ -30,11 +30,11 @@ module.exports = {
         cream: '#ece9df'         // primary body type on dark
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         // Playfair Display = the serif on the cover wordmark.
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        display: ['var(--font-playfair)', 'Georgia', 'serif'],
         // Montserrat for tracked uppercase decks ("VET'S EYE VIEW").
-        deck: ['Montserrat', 'Inter', 'sans-serif']
+        deck: ['var(--font-montserrat)', 'var(--font-inter)', 'sans-serif']
       },
       letterSpacing: {
         brand: '0.18em',

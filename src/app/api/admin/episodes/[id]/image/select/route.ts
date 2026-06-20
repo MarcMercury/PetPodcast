@@ -40,6 +40,16 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     // Download remote AI image, then re-upload to our Supabase bucket for permanence.
     const r = await fetch(url);
     if (!r.ok) throw new Error('failed to fetch source image');
+
+    // Verify the response is actually an image before buffering.
+    const ct = r.headers.get('content-type') || '';
+    if (!ct.startsWith('image/')) {
+      return NextResponse.json(
+        { error: `Expected image content-type, got "${ct}"` },
+        { status: 400 }
+      );
+    }
+
     const buf = Buffer.from(await r.arrayBuffer());
     const path = `${params.id}/cover-${Date.now()}.png`;
 
